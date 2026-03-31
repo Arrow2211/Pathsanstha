@@ -1,0 +1,591 @@
+import express from "express";
+import { createServer as createViteServer } from "vite";
+import path from "path";
+import fs from "fs/promises";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+const { sign, verify } = jwt;
+import { createClient } from "@supabase/supabase-js";
+
+console.log("Server script starting...");
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
+
+// Supabase Configuration
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+/**
+ * FINAL AND CORRECT SQL SCRIPT FOR SUPABASE (Run this in the SQL Editor):
+ * 
+ * -- 1. Create app_content table
+ * CREATE TABLE IF NOT EXISTS app_content (
+ *   section_key TEXT PRIMARY KEY,
+ *   marathi JSONB NOT NULL,
+ *   english JSONB NOT NULL,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+ * );
+ * 
+ * -- 2. Create stats table
+ * CREATE TABLE IF NOT EXISTS stats (
+ *   id INTEGER PRIMARY KEY DEFAULT 1,
+ *   share_capital TEXT,
+ *   total_deposits TEXT,
+ *   total_loans TEXT,
+ *   total_members TEXT,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+ *   CONSTRAINT single_row CHECK (id = 1)
+ * );
+ * 
+ * -- 3. Create loans table
+ * CREATE TABLE IF NOT EXISTS loans (
+ *   id TEXT PRIMARY KEY,
+ *   name_marathi TEXT,
+ *   name_english TEXT,
+ *   rate TEXT,
+ *   description_marathi TEXT,
+ *   description_english TEXT,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+ * );
+ * 
+ * -- 4. Create deposits table
+ * CREATE TABLE IF NOT EXISTS deposits (
+ *   id TEXT PRIMARY KEY,
+ *   name_marathi TEXT,
+ *   name_english TEXT,
+ *   general TEXT,
+ *   senior TEXT,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+ * );
+ * 
+ * -- 5. Create recurring_deposits table
+ * CREATE TABLE IF NOT EXISTS recurring_deposits (
+ *   id TEXT PRIMARY KEY,
+ *   period_marathi TEXT,
+ *   period_english TEXT,
+ *   rate TEXT,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+ * );
+ * 
+ * -- Enable RLS (Optional but recommended)
+ * -- ALTER TABLE app_content ENABLE ROW LEVEL SECURITY;
+ * -- ALTER TABLE stats ENABLE ROW LEVEL SECURITY;
+ * -- ALTER TABLE loans ENABLE ROW LEVEL SECURITY;
+ * -- ALTER TABLE deposits ENABLE ROW LEVEL SECURITY;
+ * -- ALTER TABLE recurring_deposits ENABLE ROW LEVEL SECURITY;
+ * 
+ * -- Create policies for public read access
+ * -- CREATE POLICY "Public read access" ON app_content FOR SELECT USING (true);
+ * -- CREATE POLICY "Public read access" ON stats FOR SELECT USING (true);
+ * -- CREATE POLICY "Public read access" ON loans FOR SELECT USING (true);
+ * -- CREATE POLICY "Public read access" ON deposits FOR SELECT USING (true);
+ * -- CREATE POLICY "Public read access" ON recurring_deposits FOR SELECT USING (true);
+ */
+
+console.log("Supabase URL:", SUPABASE_URL ? "Set" : "Not Set");
+console.log("Supabase Service Role Key:", SUPABASE_SERVICE_ROLE_KEY ? "Set" : "Not Set");
+
+let supabase: any = null;
+
+const getSupabase = () => {
+  if (!supabase) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error("Supabase configuration missing. Please set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
+    }
+    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  }
+  return supabase;
+};
+
+async function startServer() {
+  console.log("startServer() called");
+  try {
+    const app = express();
+    const PORT = 3000;
+
+    app.use(cors());
+    app.use(express.json());
+
+    app.get("/api/health", (req, res) => {
+      res.json({ status: "ok", supabase: !!SUPABASE_URL });
+    });
+
+    app.get("/api/supabase-status", async (req, res) => {
+      try {
+        const client = getSupabase();
+        const { data, error } = await client.from("app_content").select("section_key").limit(1);
+        if (error) throw error;
+        res.json({ connected: true, message: "Successfully connected to Supabase" });
+      } catch (error: any) {
+        res.status(500).json({ connected: false, error: error.message });
+      }
+    });
+
+    // Auth Middleware
+    const authenticate = (req: any, res: any, next: any) => {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) return res.status(401).json({ error: "Unauthorized" });
+      try {
+        verify(token, JWT_SECRET);
+        next();
+      } catch (e) {
+        res.status(401).json({ error: "Invalid token" });
+      }
+    };
+
+    // Helper to read/write data from Supabase
+    const getTableData = async (tableName: string) => {
+      try {
+        const client = getSupabase();
+        let query = client.from(tableName).select("*");
+        
+        if (tableName === "app_content") {
+          query = query.order("section_key", { ascending: true });
+        } else {
+          query = query.order("id", { ascending: true });
+        }
+
+        const { data, error } = await query;
+        
+        if (error) {
+          console.warn(`Supabase fetch error for ${tableName}:`, error.message);
+          return null;
+        }
+        return data;
+      } catch (e) {
+        console.error(`Error fetching ${tableName} from Supabase:`, e);
+        return null;
+      }
+    };
+
+    const getSingleRow = async (tableName: string, key?: string) => {
+      try {
+        const client = getSupabase();
+        let query = client.from(tableName).select("*");
+        if (key) {
+          query = query.eq("section_key", key);
+        }
+        const { data, error } = await query.maybeSingle();
+        
+        if (error) {
+          console.warn(`Supabase fetch error for ${tableName}:`, error.message);
+          return null;
+        }
+        return data;
+      } catch (e) {
+        console.error(`Error fetching ${tableName} from Supabase:`, e);
+        return null;
+      }
+    };
+
+    // API Routes
+    app.post("/api/login", async (req, res) => {
+      const { password } = req.body;
+      if (password === ADMIN_PASSWORD) {
+        const token = sign({ role: "admin" }, JWT_SECRET, { expiresIn: "1h" });
+        return res.json({ token });
+      }
+      res.status(401).json({ error: "Invalid password" });
+    });
+
+    // Migration Endpoint
+    app.post("/api/migrate", authenticate, async (req, res) => {
+      try {
+        console.log("Starting migration process...");
+        const client = getSupabase();
+        const results: any = {};
+        
+        // 1. Migrate Loans
+        console.log("Migrating loans...");
+        const loansData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
+        for (const loan of loansData) {
+          const { error } = await client.from("loans").upsert({
+            id: loan.id,
+            name_marathi: loan.name.marathi,
+            name_english: loan.name.english,
+            rate: loan.rate,
+            description_marathi: loan.description.marathi,
+            description_english: loan.description.english
+          });
+          if (error) {
+            console.error(`Loans migration failed for ID ${loan.id}:`, error.message);
+            throw new Error(`Loans migration failed for ID ${loan.id}: ${error.message}`);
+          }
+        }
+        results.loans = loansData.length;
+
+        // 2. Migrate Deposits
+        console.log("Migrating deposits...");
+        const depositsData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
+        for (const dep of depositsData) {
+          const { error } = await client.from("deposits").upsert({
+            id: dep.id,
+            name_marathi: dep.name.marathi,
+            name_english: dep.name.english,
+            general: dep.general,
+            senior: dep.senior
+          });
+          if (error) {
+            console.error(`Deposits migration failed for ID ${dep.id}:`, error.message);
+            throw new Error(`Deposits migration failed for ID ${dep.id}: ${error.message}`);
+          }
+        }
+        results.deposits = depositsData.length;
+
+        // 3. Migrate Recurring Deposits
+        console.log("Migrating recurring deposits...");
+        const rdData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
+        for (const rd of rdData) {
+          const { error } = await client.from("recurring_deposits").upsert({
+            id: rd.id,
+            period_marathi: rd.period.marathi,
+            period_english: rd.period.english,
+            rate: rd.rate
+          });
+          if (error) {
+            console.error(`Recurring deposits migration failed for ID ${rd.id}:`, error.message);
+            throw new Error(`Recurring deposits migration failed for ID ${rd.id}: ${error.message}`);
+          }
+        }
+        results.recurring_deposits = rdData.length;
+
+        // 4. Migrate Stats
+        console.log("Migrating stats...");
+        const statsData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
+        const { error: statsError } = await client.from("stats").upsert({
+          id: 1,
+          share_capital: statsData.shareCapital,
+          total_deposits: statsData.totalDeposits,
+          total_loans: statsData.totalLoans,
+          total_members: statsData.totalMembers
+        });
+        if (statsError) {
+          console.error("Stats migration failed:", statsError.message);
+          throw new Error(`Stats migration failed: ${statsError.message}`);
+        }
+        results.stats = 1;
+
+        // 5. Migrate Content
+        console.log("Migrating content...");
+        const contentData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
+        const sections = Object.keys(contentData.marathi);
+        for (const section of sections) {
+          const { error } = await client.from("app_content").upsert({
+            section_key: section,
+            marathi: contentData.marathi[section],
+            english: contentData.english[section]
+          });
+          if (error) {
+            console.error(`Content migration failed for section ${section}:`, error.message);
+            throw new Error(`Content migration failed for section ${section}: ${error.message}`);
+          }
+        }
+        results.content = sections.length;
+
+        console.log("Migration completed successfully:", results);
+        res.json({ success: true, message: "Migration completed successfully", results });
+      } catch (error: any) {
+        console.error("Migration failed:", error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/content", async (req, res) => {
+      try {
+        const data = await getTableData("app_content");
+        if (!data || data.length === 0) {
+          console.log("Supabase app_content empty or missing, falling back to local JSON");
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
+          return res.json(localData);
+        }
+        
+        const content: any = { marathi: {}, english: {} };
+        data.forEach((row: any) => {
+          content.marathi[row.section_key] = row.marathi;
+          content.english[row.section_key] = row.english;
+        });
+        res.json(content);
+      } catch (error: any) {
+        console.error("Error in /api/content:", error);
+        try {
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
+          res.json(localData);
+        } catch (e) {
+          res.status(500).json({ error: "Failed to load content" });
+        }
+      }
+    });
+
+    app.post("/api/content", authenticate, async (req, res) => {
+      try {
+        const client = getSupabase();
+        const content = req.body;
+        const sections = Object.keys(content.marathi);
+        for (const section of sections) {
+          const { error } = await client.from("app_content").upsert({
+            section_key: section,
+            marathi: content.marathi[section],
+            english: content.english[section]
+          });
+          if (error) {
+            console.error(`Error saving section ${section}:`, error.message);
+            return res.status(500).json({ error: `Failed to save section ${section}: ${error.message}` });
+          }
+        }
+        res.json({ success: true });
+      } catch (error: any) {
+        console.error("Content save failed:", error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/stats", async (req, res) => {
+      try {
+        const data = await getSingleRow("stats");
+        if (!data) {
+          console.log("Supabase stats empty or missing, falling back to local JSON");
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
+          return res.json(localData);
+        }
+        res.json({
+          shareCapital: data.share_capital,
+          totalDeposits: data.total_deposits,
+          totalLoans: data.total_loans,
+          totalMembers: data.total_members
+        });
+      } catch (error: any) {
+        console.error("Error in /api/stats:", error);
+        try {
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
+          res.json(localData);
+        } catch (e) {
+          res.status(500).json({ error: "Failed to load stats" });
+        }
+      }
+    });
+
+    app.post("/api/stats", authenticate, async (req, res) => {
+      try {
+        const client = getSupabase();
+        const { shareCapital, totalDeposits, totalLoans, totalMembers } = req.body;
+        const { error } = await client.from("stats").upsert({
+          id: 1,
+          share_capital: shareCapital,
+          total_deposits: totalDeposits,
+          total_loans: totalLoans,
+          total_members: totalMembers
+        });
+        if (error) return res.status(500).json({ error: error.message });
+        res.json({ success: true });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/deposits", async (req, res) => {
+      try {
+        const data = await getTableData("deposits");
+        if (!data || data.length === 0) {
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
+          return res.json(localData);
+        }
+        const formatted = data.map((d: any) => ({
+          id: d.id,
+          name: { marathi: d.name_marathi, english: d.name_english },
+          general: d.general,
+          senior: d.senior
+        }));
+        res.json(formatted);
+      } catch (error: any) {
+        const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
+        res.json(localData);
+      }
+    });
+
+    app.post("/api/deposits", authenticate, async (req, res) => {
+      try {
+        const client = getSupabase();
+        const data = req.body;
+        
+        // Handle deletions: Remove items not in the current list
+        // Ensure all IDs are strings for consistent comparison with Supabase TEXT column
+        const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+        
+        console.log(`Saving deposits. Incoming IDs: ${incomingIds.join(', ')}`);
+        
+        if (incomingIds.length > 0) {
+          const { error: deleteError } = await client.from("deposits").delete().not("id", "in", incomingIds);
+          if (deleteError) {
+            console.error("Error deleting removed deposits:", deleteError.message);
+            // We continue anyway to try and upsert the rest
+          }
+        } else {
+          // If no IDs, delete all
+          const { error: deleteError } = await client.from("deposits").delete().neq("id", "_none_");
+          if (deleteError) console.error("Error deleting all deposits:", deleteError.message);
+        }
+
+        for (const d of data) {
+          const { error } = await client.from("deposits").upsert({
+            id: String(d.id),
+            name_marathi: d.name.marathi,
+            name_english: d.name.english,
+            general: d.general,
+            senior: d.senior
+          });
+          if (error) {
+            console.error(`Error saving deposit ${d.id}:`, error.message);
+            return res.status(500).json({ error: `Failed to save deposit ${d.id}: ${error.message}` });
+          }
+        }
+        res.json({ success: true });
+      } catch (error: any) {
+        console.error("Deposits save failed:", error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/recurring-deposits", async (req, res) => {
+      try {
+        const data = await getTableData("recurring_deposits");
+        if (!data || data.length === 0) {
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
+          return res.json(localData);
+        }
+        const formatted = data.map((d: any) => ({
+          id: d.id,
+          period: { marathi: d.period_marathi, english: d.period_english },
+          rate: d.rate
+        }));
+        res.json(formatted);
+      } catch (error: any) {
+        const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
+        res.json(localData);
+      }
+    });
+
+    app.post("/api/recurring-deposits", authenticate, async (req, res) => {
+      try {
+        const client = getSupabase();
+        const data = req.body;
+
+        // Handle deletions: Remove items not in the current list
+        const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+        
+        console.log(`Saving recurring deposits. Incoming IDs: ${incomingIds.join(', ')}`);
+
+        if (incomingIds.length > 0) {
+          const { error: deleteError } = await client.from("recurring_deposits").delete().not("id", "in", incomingIds);
+          if (deleteError) console.error("Error deleting removed recurring deposits:", deleteError.message);
+        } else {
+          const { error: deleteError } = await client.from("recurring_deposits").delete().neq("id", "_none_");
+          if (deleteError) console.error("Error deleting all recurring deposits:", deleteError.message);
+        }
+
+        for (const d of data) {
+          const { error } = await client.from("recurring_deposits").upsert({
+            id: String(d.id),
+            period_marathi: d.period.marathi,
+            period_english: d.period.english,
+            rate: d.rate
+          });
+          if (error) {
+            console.error(`Error saving recurring deposit ${d.id}:`, error.message);
+            return res.status(500).json({ error: `Failed to save recurring deposit ${d.id}: ${error.message}` });
+          }
+        }
+        res.json({ success: true });
+      } catch (error: any) {
+        console.error("Recurring deposits save failed:", error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/loans", async (req, res) => {
+      try {
+        const data = await getTableData("loans");
+        if (!data || data.length === 0) {
+          const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
+          return res.json(localData);
+        }
+        const formatted = data.map((d: any) => ({
+          id: d.id,
+          name: { marathi: d.name_marathi, english: d.name_english },
+          rate: d.rate,
+          description: { marathi: d.description_marathi, english: d.description_english }
+        }));
+        res.json(formatted);
+      } catch (error: any) {
+        const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
+        res.json(localData);
+      }
+    });
+
+    app.post("/api/loans", authenticate, async (req, res) => {
+      try {
+        const client = getSupabase();
+        const data = req.body;
+
+        // Handle deletions: Remove items not in the current list
+        const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+        
+        console.log(`Saving loans. Incoming IDs: ${incomingIds.join(', ')}`);
+
+        if (incomingIds.length > 0) {
+          const { error: deleteError } = await client.from("loans").delete().not("id", "in", incomingIds);
+          if (deleteError) console.error("Error deleting removed loans:", deleteError.message);
+        } else {
+          const { error: deleteError } = await client.from("loans").delete().neq("id", "_none_");
+          if (deleteError) console.error("Error deleting all loans:", deleteError.message);
+        }
+
+        for (const d of data) {
+          const { error } = await client.from("loans").upsert({
+            id: String(d.id),
+            name_marathi: d.name.marathi,
+            name_english: d.name.english,
+            rate: d.rate,
+            description_marathi: d.description.marathi,
+            description_english: d.description.english
+          });
+          if (error) {
+            console.error(`Error saving loan ${d.id}:`, error.message);
+            return res.status(500).json({ error: `Failed to save loan ${d.id}: ${error.message}` });
+          }
+        }
+        res.json({ success: true });
+      } catch (error: any) {
+        console.error("Loans save failed:", error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // Vite middleware for development
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Initializing Vite middleware...");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("Vite middleware initialized.");
+    } else {
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*", (req, res) => {
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://0.0.0.0:${PORT}`);
+      console.log("Server is ready to accept connections.");
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+startServer();

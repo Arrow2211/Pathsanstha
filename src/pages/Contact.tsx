@@ -1,0 +1,180 @@
+import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
+import { motion } from 'motion/react';
+import { Phone, Mail, MapPin, Send, CheckCircle, Clock } from 'lucide-react';
+
+const Contact = () => {
+  const { t, language } = useLanguage();
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
+  return (
+    <div className="bg-white min-h-screen">
+      {/* Page Header - Traditional Style */}
+      <div className="bg-[#003366] py-24 md:py-32 text-white relative overflow-hidden">
+        <div className="section-container relative z-10">
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="section-title text-white mb-4"
+          >
+            {t('contact.title')}
+          </motion.h1>
+          <div className="title-underline bg-[#C5A059]"></div>
+          <p className="mt-8 text-blue-100 max-w-2xl opacity-90 text-lg leading-relaxed">
+            {language === 'marathi' 
+              ? 'आम्ही तुमच्या सेवेसाठी सदैव तत्पर आहोत. कोणत्याही शंका किंवा मदतीसाठी संपर्क साधा.' 
+              : 'We are here to help you. Reach out to us for any queries or assistance regarding our services.'}
+          </p>
+        </div>
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-[-20deg] translate-x-1/2"></div>
+      </div>
+
+      <div className="section-padding">
+        <div className="section-container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            {/* Contact Info & Map */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-12"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 hover:shadow-lg transition-all group">
+                  <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
+                    <MapPin size={24} />
+                  </div>
+                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'मुख्य कार्यालय' : 'Main Office'}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">{t('contact.address')}</p>
+                </div>
+                <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 hover:shadow-lg transition-all group">
+                  <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
+                    <Phone size={24} />
+                  </div>
+                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'संपर्क' : 'Contact'}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed font-bold mb-1">{t('contact.phone')}</p>
+                  <p className="text-slate-600 text-sm leading-relaxed">{t('contact.email')}</p>
+                </div>
+                <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 md:col-span-2 hover:shadow-lg transition-all group">
+                  <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
+                    <Clock size={24} />
+                  </div>
+                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'कामाची वेळ' : 'Working Hours'}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="bg-white p-4 rounded-lg border border-slate-100">
+                      <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Mon - Sat</p>
+                      <p className="text-slate-700 font-bold">10:00 AM - 05:00 PM</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-slate-100">
+                      <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Sunday</p>
+                      <p className="text-red-500 font-bold">Closed</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Map */}
+              <div className="bg-slate-100 h-96 rounded-2xl overflow-hidden border border-slate-200 shadow-2xl relative group">
+                {t('contact.googleMapsUrl') ? (
+                  <iframe
+                    src={t('contact.googleMapsUrl')}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Maps"
+                    className="grayscale group-hover:grayscale-0 transition-all duration-700"
+                  ></iframe>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-slate-400 flex-col gap-4">
+                    <MapPin size={48} strokeWidth={1} />
+                    <p className="uppercase tracking-widest text-xs font-bold">Map View Unavailable</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <div className="bg-white p-8 md:p-12 rounded-2xl shadow-2xl border border-slate-100 relative overflow-hidden h-full">
+                <div className="absolute top-0 left-0 w-full h-2 bg-[#C5A059]"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -translate-y-1/2 translate-x-1/2 -z-10"></div>
+                
+                <h2 className="text-2xl font-bold text-[#003366] mb-10 uppercase tracking-widest flex items-center gap-3">
+                  <span className="w-8 h-1 bg-[#C5A059]"></span>
+                  {language === 'marathi' ? 'आम्हाला संदेश पाठवा' : 'Send us a Message'}
+                </h2>
+                
+                {submitted ? (
+                  <div className="bg-slate-50 border border-slate-200 p-12 rounded-xl text-center h-[calc(100%-100px)] flex flex-col justify-center">
+                    <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-green-200">
+                      <CheckCircle size={40} />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#003366] mb-4 uppercase tracking-widest">
+                      {language === 'marathi' ? 'धन्यवाद!' : 'Thank You!'}
+                    </h3>
+                    <p className="text-slate-500 leading-relaxed text-lg">
+                      {language === 'marathi' 
+                        ? 'तुमचा संदेश आम्हाला मिळाला आहे. आम्ही लवकरच तुमच्याशी संपर्क करू.' 
+                        : 'We have received your message. Our representative will get back to you shortly.'}
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.name')}</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
+                        placeholder={language === 'marathi' ? 'तुमचे पूर्ण नाव' : 'Your full name'}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.email')}</label>
+                      <input 
+                        type="email" 
+                        required
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
+                        placeholder="example@mail.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.message')}</label>
+                      <textarea 
+                        rows={5}
+                        required
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium resize-none"
+                        placeholder={language === 'marathi' ? 'तुमचा संदेश येथे लिहा...' : 'Write your message here...'}
+                      ></textarea>
+                    </div>
+                    <button 
+                      type="submit"
+                      className="w-full bg-[#003366] text-white py-5 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-[#C5A059] transition-all shadow-xl flex items-center justify-center gap-3 group"
+                    >
+                      <span>{t('contact.form.submit')}</span>
+                      <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </button>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Contact;
+
