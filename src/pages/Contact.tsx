@@ -6,15 +6,40 @@ import { Phone, Mail, MapPin, Send, CheckCircle, Clock } from 'lucide-react';
 const Contact = () => {
   const { t, language } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (res.ok) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || 'Failed to send message'}`);
+      }
+    } catch (err) {
+      alert('Error connecting to server.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white">
       {/* Page Header - Traditional Style */}
       <div className="bg-[#003366] py-24 md:py-32 text-white relative overflow-hidden">
         <div className="section-container relative z-10">
@@ -129,40 +154,60 @@ const Contact = () => {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-8">
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.name')}</label>
                       <input 
                         type="text" 
                         required
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
                         placeholder={language === 'marathi' ? 'तुमचे पूर्ण नाव' : 'Your full name'}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.email')}</label>
-                      <input 
-                        type="email" 
-                        required
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
-                        placeholder="example@mail.com"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.email')}</label>
+                        <input 
+                          type="email" 
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
+                          placeholder="example@mail.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{language === 'marathi' ? 'मोबाईल नंबर' : 'Mobile Number'}</label>
+                        <input 
+                          type="tel" 
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium"
+                          placeholder={language === 'marathi' ? 'तुमचा मोबाईल नंबर' : 'Your mobile number'}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest ml-1">{t('contact.form.message')}</label>
                       <textarea 
-                        rows={5}
+                        rows={4}
                         required
-                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium resize-none"
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#C5A059] focus:border-transparent transition-all text-slate-700 font-medium resize-none"
                         placeholder={language === 'marathi' ? 'तुमचा संदेश येथे लिहा...' : 'Write your message here...'}
                       ></textarea>
                     </div>
                     <button 
                       type="submit"
-                      className="w-full bg-[#003366] text-white py-5 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-[#C5A059] transition-all shadow-xl flex items-center justify-center gap-3 group"
+                      disabled={isSubmitting}
+                      className="w-full bg-[#003366] text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-[#C5A059] transition-all shadow-xl flex items-center justify-center gap-3 group disabled:opacity-50"
                     >
-                      <span>{t('contact.form.submit')}</span>
-                      <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      <span>{isSubmitting ? (language === 'marathi' ? 'पाठवत आहे...' : 'Sending...') : t('contact.form.submit')}</span>
+                      {!isSubmitting && <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
                     </button>
                   </form>
                 )}

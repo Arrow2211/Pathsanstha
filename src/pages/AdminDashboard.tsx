@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Save, LogOut, TrendingUp, Users, Landmark, 
-  FileText, Plus, Trash2, CheckCircle, AlertCircle 
+  FileText, Plus, Trash2, CheckCircle, AlertCircle,
+  Mail, Phone
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -15,6 +16,7 @@ const AdminDashboard = () => {
   const [localDeposits, setLocalDeposits] = useState<any>(null);
   const [localRecurringDeposits, setLocalRecurringDeposits] = useState<any>(null);
   const [localLoans, setLocalLoans] = useState<any>(null);
+  const [enquiries, setEnquiries] = useState<any[]>([]);
   const [supabaseStatus, setSupabaseStatus] = useState<{ connected: boolean; message?: string; error?: string } | null>(null);
   const [isMigrating, setIsMigrating] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -30,11 +32,45 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchEnquiries = async () => {
+    const token = localStorage.getItem('adminToken');
+    try {
+      const res = await fetch('/api/enquiries', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEnquiries(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch enquiries:', err);
+    }
+  };
+
+  const deleteEnquiry = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this enquiry?')) return;
+    const token = localStorage.getItem('adminToken');
+    try {
+      const res = await fetch(`/api/enquiries/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setEnquiries(enquiries.filter(e => e.id !== id));
+        setMessage({ text: 'Enquiry deleted successfully', type: 'success' });
+      }
+    } catch (err) {
+      setMessage({ text: 'Failed to delete enquiry', type: 'error' });
+    }
+    setTimeout(() => setMessage({ text: '', type: '' }), 5000);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) navigate('/admin');
     
     checkSupabase();
+    fetchEnquiries();
     
     if (stats) setLocalStats({ ...stats });
     if (content) setLocalContent(JSON.parse(JSON.stringify(content)));
@@ -139,6 +175,13 @@ const AdminDashboard = () => {
             <Users size={20} />
             Loan Schemes
           </button>
+          <button 
+            onClick={() => setActiveTab('enquiries')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'enquiries' ? 'bg-blue-800 shadow-inner' : 'hover:bg-blue-800/50'}`}
+          >
+            <Mail size={20} />
+            Enquiries / Messages
+          </button>
           <div className="pt-4 border-t border-blue-800 mt-4">
             <button 
               disabled={isMigrating}
@@ -240,7 +283,18 @@ CREATE TABLE IF NOT EXISTS recurring_deposits (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Reload schema cache
+-- 6. Create enquiries table
+CREATE TABLE IF NOT EXISTS enquiries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT NOT NULL,
+  subject TEXT,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Reload schema cache
 NOTIFY pgrst, 'reload schema';`;
                   console.log("--- SUPABASE SQL SCRIPT START ---");
                   console.log(sql);
@@ -1126,6 +1180,58 @@ NOTIFY pgrst, 'reload schema';`;
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+          {activeTab === 'enquiries' && (
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-bold text-gray-900">Enquiries & Messages</h2>
+                <button onClick={fetchEnquiries} className="text-blue-600 hover:text-blue-800 font-bold text-sm">
+                  Refresh
+                </button>
+              </div>
+              
+              <div className="space-y-6">
+                {enquiries.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-gray-200">
+                    <Mail size={48} className="mx-auto text-gray-300 mb-4" />
+                    <p className="text-gray-500">No enquiries found.</p>
+                  </div>
+                ) : (
+                  enquiries.map((e: any) => (
+                    <div key={e.id} className="p-6 bg-slate-50 rounded-2xl border border-gray-100 relative group">
+                      <button 
+                        onClick={() => deleteEnquiry(e.id)}
+                        className="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-50 rounded-lg"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-blue-900">{e.name}</h3>
+                          <div className="flex flex-wrap gap-4 mt-1">
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <Mail size={12} /> {e.email}
+                            </span>
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <Phone size={12} /> {e.phone}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                            {new Date(e.created_at).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-gray-100">
+                        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest text-[10px] mb-2">Message</p>
+                        <p className="text-gray-700 whitespace-pre-wrap">{e.message}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

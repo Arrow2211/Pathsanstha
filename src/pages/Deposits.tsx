@@ -9,7 +9,7 @@ const Deposits = () => {
   const { t, language, deposits, recurringDeposits } = useLanguage();
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white">
       {/* Page Header - Traditional Style */}
       <div className="bg-[#003366] py-24 md:py-32 text-white relative overflow-hidden">
         <div className="section-container relative z-10">

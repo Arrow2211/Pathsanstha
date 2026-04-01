@@ -18,7 +18,7 @@ const Loans = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white">
       {/* Page Header - Traditional Style */}
       <div className="bg-[#003366] py-24 md:py-32 text-white relative overflow-hidden">
         <div className="section-container relative z-10">
@@ -74,7 +74,10 @@ const Loans = () => {
                     </div>
                   </div>
                   <div className="bg-slate-50 border-t border-slate-200 p-5 text-center group-hover:bg-slate-100 transition-colors">
-                    <button className="text-[#003366] font-bold text-xs uppercase tracking-widest hover:text-[#C5A059] transition-colors">
+                    <button 
+                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="text-[#003366] font-bold text-xs uppercase tracking-widest hover:text-[#C5A059] transition-colors"
+                    >
                       {language === 'marathi' ? 'अधिक माहिती' : 'More Details'}
                     </button>
                   </div>

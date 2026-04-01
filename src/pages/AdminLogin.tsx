@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const AdminLogin = () => {
   const [password, setPassword] = useState('');
@@ -35,26 +36,41 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden">
-        <div className="bg-blue-900 p-8 text-center text-white">
-          <div className="bg-blue-800 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <ShieldCheck size={32} />
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full bg-pattern opacity-5 pointer-events-none"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-3xl"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 relative z-10"
+      >
+        <div className="bg-primary p-12 text-center text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-pattern opacity-10"></div>
+          <div className="bg-white/10 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 backdrop-blur-xl border border-white/20 shadow-2xl">
+            <ShieldCheck size={40} className="text-accent" />
           </div>
-          <h1 className="text-2xl font-bold">Admin Login</h1>
-          <p className="text-blue-200 text-sm mt-2">Secure access to society management</p>
+          <h1 className="text-3xl font-black tracking-tighter mb-2">ADMIN PORTAL</h1>
+          <p className="text-blue-200 text-sm font-bold uppercase tracking-[0.2em] opacity-80">Secure Management Access</p>
         </div>
         
-        <form onSubmit={handleLogin} className="p-8 space-y-6">
+        <form onSubmit={handleLogin} className="p-10 md:p-12 space-y-8">
           {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-red-50 text-red-600 p-5 rounded-2xl text-sm font-black border border-red-100 flex items-center gap-3"
+            >
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
               {error}
-            </div>
+            </motion.div>
           )}
           
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <Lock size={16} />
+          <div className="space-y-3">
+            <label className="text-[10px] uppercase font-black text-slate-400 tracking-[0.25em] ml-2 flex items-center gap-2">
+              <Lock size={14} className="text-accent" />
               Admin Password
             </label>
             <input 
@@ -62,7 +78,7 @@ const AdminLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full px-8 py-5 bg-surface border border-slate-100 rounded-[1.5rem] focus:outline-none focus:ring-4 focus:ring-accent/20 focus:border-accent transition-all text-primary font-bold placeholder:text-slate-300"
               placeholder="••••••••"
             />
           </div>
@@ -70,19 +86,21 @@ const AdminLogin = () => {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-800 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+            className="btn-primary w-full py-6 rounded-[1.5rem] text-base shadow-2xl flex items-center justify-center gap-4 group disabled:opacity-50"
           >
-            {loading ? 'Authenticating...' : 'Login to Dashboard'}
-            {!loading && <ArrowRight size={20} />}
+            <span className="font-black tracking-widest uppercase">
+              {loading ? 'Authenticating...' : 'Login to Dashboard'}
+            </span>
+            {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
           </button>
         </form>
         
-        <div className="p-6 bg-slate-50 text-center border-t border-gray-100">
-          <p className="text-xs text-gray-400">
-            Authorized personnel only. All access is logged.
+        <div className="p-8 bg-surface text-center border-t border-slate-50">
+          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-relaxed">
+            Authorized personnel only.<br />All access attempts are logged and monitored.
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

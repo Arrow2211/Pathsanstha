@@ -26,15 +26,54 @@ const ScrollToTop = () => {
 const Header = () => {
   const { language, setLanguage, t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [activeSection, setActiveSection] = React.useState('home');
   const location = useLocation();
 
   const navItems = [
-    { name: t('nav.home'), path: '/' },
-    { name: t('nav.about'), path: '/about' },
-    { name: t('nav.deposits'), path: '/deposits' },
-    { name: t('nav.loans'), path: '/loans' },
-    { name: t('nav.contact'), path: '/contact' },
+    { name: t('nav.home'), path: 'home' },
+    { name: t('nav.about'), path: 'about' },
+    { name: t('nav.deposits'), path: 'deposits' },
+    { name: t('nav.loans'), path: 'loans' },
+    { name: t('nav.contact'), path: 'contact' },
   ];
+
+  React.useEffect(() => {
+    if (location.pathname !== '/') return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px',
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    navItems.forEach(item => {
+      const element = document.getElementById(item.path);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [location.pathname, navItems]);
+
+  const scrollToSection = (id: string) => {
+    setIsMenuOpen(false);
+    if (location.pathname !== '/') {
+      window.location.href = `/#${id}`;
+      return;
+    }
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 shadow-md">
@@ -54,7 +93,7 @@ const Header = () => {
         <div className="section-container">
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center">
-              <Link to="/" className="flex items-center group">
+              <Link to="/" className="flex items-center group" onClick={() => scrollToSection('home')}>
                 {t('header.logoUrl') && (
                   <img 
                     src={t('header.logoUrl')} 
@@ -77,18 +116,18 @@ const Header = () => {
             {/* Desktop Nav */}
             <nav className="hidden md:flex space-x-6 lg:space-x-8 items-center">
               {navItems.map((item) => (
-                <Link
+                <button
                   key={item.path}
-                  to={item.path}
+                  onClick={() => scrollToSection(item.path)}
                   className={`text-[11px] lg:text-xs font-bold uppercase tracking-widest hover:text-[#C5A059] transition-colors relative py-2 ${
-                    location.pathname === item.path ? 'text-[#C5A059]' : ''
+                    activeSection === item.path ? 'text-[#C5A059]' : ''
                   }`}
                 >
                   {item.name}
-                  {location.pathname === item.path && (
+                  {activeSection === item.path && (
                     <motion.div layoutId="nav-underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-[#C5A059]" />
                   )}
-                </Link>
+                </button>
               ))}
               <button
                 onClick={() => setLanguage(language === 'marathi' ? 'english' : 'marathi')}
@@ -130,14 +169,15 @@ const Header = () => {
           >
             <div className="px-4 pt-2 pb-6 space-y-2">
               {navItems.map((item) => (
-                <Link
+                <button
                   key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-sm font-bold uppercase tracking-widest hover:bg-[#003366] text-white"
+                  onClick={() => scrollToSection(item.path)}
+                  className={`block w-full text-left px-3 py-3 rounded-md text-sm font-bold uppercase tracking-widest hover:bg-[#003366] text-white ${
+                    activeSection === item.path ? 'text-[#C5A059]' : ''
+                  }`}
                 >
                   {item.name}
-                </Link>
+                </button>
               ))}
             </div>
           </motion.div>
@@ -149,6 +189,19 @@ const Header = () => {
 
 const Footer = () => {
   const { language, t } = useLanguage();
+  const location = useLocation();
+
+  const scrollToSection = (id: string) => {
+    if (location.pathname !== '/') {
+      window.location.href = `/#${id}`;
+      return;
+    }
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-[#002244] text-white pt-20 pb-10 border-t-4 border-[#C5A059]">
       <div className="section-container">
@@ -200,9 +253,9 @@ const Footer = () => {
           <div>
             <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-8">{t('nav.quickLinks')}</h4>
             <ul className="space-y-3 text-sm text-blue-100/80">
-              <li><Link to="/about" className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.about')}</Link></li>
-              <li><Link to="/deposits" className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.deposits')}</Link></li>
-              <li><Link to="/loans" className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.loans')}</Link></li>
+              <li><button onClick={() => scrollToSection('about')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.about')}</button></li>
+              <li><button onClick={() => scrollToSection('deposits')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.deposits')}</button></li>
+              <li><button onClick={() => scrollToSection('loans')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.loans')}</button></li>
               <li><Link to="/admin" className="hover:text-[#C5A059] transition-colors opacity-50 text-xs flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.staffLogin')}</Link></li>
             </ul>
           </div>
@@ -220,8 +273,33 @@ const Footer = () => {
   );
 };
 
+const MainPage = () => {
+  return (
+    <>
+      <div id="home"><Home /></div>
+      <div id="about"><About /></div>
+      <div id="deposits"><Deposits /></div>
+      <div id="loans"><Loans /></div>
+      <div id="contact"><Contact /></div>
+    </>
+  );
+};
+
 const AppContent = () => {
   const { loading } = useLanguage();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   if (loading) {
     return (
@@ -237,13 +315,14 @@ const AppContent = () => {
       <Header />
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/deposits" element={<Deposits />} />
-          <Route path="/loans" element={<Loans />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/" element={<MainPage />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          {/* Fallback to main page for old routes */}
+          <Route path="/about" element={<MainPage />} />
+          <Route path="/deposits" element={<MainPage />} />
+          <Route path="/loans" element={<MainPage />} />
+          <Route path="/contact" element={<MainPage />} />
         </Routes>
       </main>
       <Footer />

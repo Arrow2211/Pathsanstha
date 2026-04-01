@@ -1,58 +1,72 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Marathi:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Marathi:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-marathi: "Noto Sans Marathi", sans-serif;
   
-  --color-bank-blue: #003366; /* Classic Navy Blue */
-  --color-bank-gold: #C5A059; /* Classic Gold */
-  --color-bank-light: #F4F7F9;
+  --color-primary: #003366;
+  --color-primary-dark: #002244;
+  --color-accent: #C5A059;
+  --color-accent-light: #D4B67C;
+  --color-surface: #F8FAFC;
 }
 
 @layer base {
   body {
-    @apply font-sans text-slate-900 bg-white;
+    @apply font-sans text-slate-800 bg-white antialiased selection:bg-accent/30;
   }
   
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-sans font-bold tracking-tight text-slate-900;
   }
-  
-  /* Marathi specific font handling */
-  [lang="mr"] {
-    font-family: var(--font-marathi);
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+
+  .glass-header {
+    @apply bg-primary/95 backdrop-blur-md border-b border-white/10;
+  }
+
+  .btn-primary {
+    @apply relative overflow-hidden bg-primary text-white px-8 py-4 rounded-xl font-bold transition-all hover:bg-primary-dark hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center uppercase tracking-widest text-xs;
+  }
+
+  .btn-accent {
+    @apply relative overflow-hidden bg-accent text-white px-8 py-4 rounded-xl font-bold transition-all hover:bg-accent-light hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center uppercase tracking-widest text-xs;
+  }
+
+  .card-modern {
+    @apply bg-white border border-slate-100 rounded-3xl p-8 shadow-sm hover:shadow-xl hover:border-accent/20 transition-all duration-500;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+
+  .bg-pattern {
+    background-image: radial-gradient(#C5A059 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    opacity: 0.05;
   }
 }
 
-.section-container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.section-padding {
-  @apply py-12 md:py-20 lg:py-24;
+::-webkit-scrollbar-track {
+  @apply bg-slate-100;
 }
 
-.section-title {
-  @apply text-3xl md:text-4xl lg:text-5xl font-bold text-[#003366] mb-4 text-center;
-}
-
-.section-subtitle {
-  @apply text-slate-500 text-sm md:text-base max-w-2xl mx-auto text-center mb-12 leading-relaxed;
-}
-
-.title-underline {
-  @apply w-16 h-1 bg-[#C5A059] mx-auto mb-12;
-}
-
-.btn-bank-primary {
-  @apply bg-[#003366] text-white px-8 py-3 rounded-md font-bold transition-all hover:bg-[#002244] shadow-md inline-flex items-center justify-center uppercase tracking-wider text-sm;
-}
-
-.btn-bank-secondary {
-  @apply bg-[#C5A059] text-white px-8 py-3 rounded-md font-bold transition-all hover:bg-[#B48F48] shadow-md inline-flex items-center justify-center uppercase tracking-wider text-sm;
-}
-
-.bank-card {
-  @apply bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all;
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
 }
