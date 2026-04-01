@@ -114,7 +114,43 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", supabase: !!SUPABASE_URL });
+  res.json({ 
+    status: "ok", 
+    supabase: !!SUPABASE_URL,
+    env: process.env.NODE_ENV,
+    vercel: !!process.env.VERCEL
+  });
+});
+
+app.get("/api/debug", async (req, res) => {
+  try {
+    const rootDir = process.cwd();
+    const apiDir = path.join(rootDir, "api");
+    const dataDir = path.join(rootDir, "data");
+    
+    const debugInfo: any = {
+      cwd: rootDir,
+      dirname: __dirname,
+      env: {
+        NODE_ENV: process.env.NODE_ENV,
+        VERCEL: process.env.VERCEL,
+        LAMBDA_TASK_ROOT: process.env.LAMBDA_TASK_ROOT
+      },
+      files: {}
+    };
+
+    try {
+      debugInfo.files.root = await fs.readdir(rootDir);
+    } catch (e: any) { debugInfo.files.root = e.message; }
+
+    try {
+      debugInfo.files.data = await fs.readdir(dataDir);
+    } catch (e: any) { debugInfo.files.data = e.message; }
+
+    res.json(debugInfo);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.get("/api/supabase-status", async (req, res) => {
@@ -145,9 +181,14 @@ const readLocalJson = async (filename: string) => {
   const possiblePaths = [
     path.join(process.cwd(), "data", filename),
     path.join(process.cwd(), "api", "..", "data", filename),
-    path.join("/var/task", "data", filename),
+    path.join(__dirname, "data", filename),
+    path.join(__dirname, "..", "data", filename),
     path.resolve(process.cwd(), "data", filename)
   ];
+
+  if (process.env.LAMBDA_TASK_ROOT) {
+    possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "data", filename));
+  }
 
   for (const filePath of possiblePaths) {
     try {
