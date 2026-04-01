@@ -46,8 +46,6 @@ const Header = () => {
             <span className="flex items-center"><Mail size={12} className="mr-2 text-[#C5A059]" /> {t('contact.email')}</span>
           </div>
           <div className="flex space-x-4 md:space-x-6">
-            <Link to="/admin" className="hover:text-[#C5A059] transition-colors">Internet Banking</Link>
-            <span className="flex items-center"><MapPin size={12} className="mr-2 text-[#C5A059]" /> {language === 'marathi' ? 'आमच्या शाखा' : 'Our Branches'}</span>
           </div>
         </div>
       </div>
@@ -141,13 +139,6 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                to="/admin"
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-3 rounded-md text-sm font-bold uppercase tracking-widest bg-[#C5A059] text-[#003366] mt-4 text-center"
-              >
-                {language === 'marathi' ? 'लॉगिन' : 'Login'}
-              </Link>
             </div>
           </motion.div>
         )}

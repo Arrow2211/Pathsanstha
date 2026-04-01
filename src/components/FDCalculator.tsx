@@ -7,13 +7,13 @@ const FDCalculator: React.FC = () => {
   const [depositAmount, setDepositAmount] = useState<number>(100000);
   const [interestRate, setInterestRate] = useState<number>(7.5);
   const [tenure, setTenure] = useState<number>(1);
+  const [compoundingFrequency, setCompoundingFrequency] = useState<number>(4); // Default quarterly
   const [maturityAmount, setMaturityAmount] = useState<number>(0);
   const [totalInterest, setTotalInterest] = useState<number>(0);
 
   useEffect(() => {
     // A = P(1 + r/n)^(nt)
-    // For FD, n is usually 4 (quarterly compounding)
-    const n = 4;
+    const n = compoundingFrequency;
     const r = interestRate / 100;
     const t = tenure;
     const amount = depositAmount * Math.pow(1 + r/n, n * t);
@@ -22,13 +22,18 @@ const FDCalculator: React.FC = () => {
       setMaturityAmount(Math.round(amount));
       setTotalInterest(Math.round(amount - depositAmount));
     }
-  }, [depositAmount, interestRate, tenure]);
+  }, [depositAmount, interestRate, tenure, compoundingFrequency]);
 
   const labels = {
     title: language === 'marathi' ? 'मुदत ठेव (FD) कॅल्क्युलेटर' : 'Fixed Deposit (FD) Calculator',
     depositAmount: language === 'marathi' ? 'ठेव रक्कम' : 'Deposit Amount',
     interestRate: language === 'marathi' ? 'व्याज दर (%)' : 'Interest Rate (%)',
     tenure: language === 'marathi' ? 'कालावधी (वर्षे)' : 'Tenure (Years)',
+    compounding: language === 'marathi' ? 'व्याज चक्रवाढ' : 'Compounding Frequency',
+    monthly: language === 'marathi' ? 'मासिक' : 'Monthly',
+    quarterly: language === 'marathi' ? 'त्रैमासिक' : 'Quarterly',
+    halfYearly: language === 'marathi' ? 'सहामाही' : 'Half-Yearly',
+    yearly: language === 'marathi' ? 'वार्षिक' : 'Yearly',
     maturityAmount: language === 'marathi' ? 'परिपक्वता रक्कम' : 'Maturity Amount',
     totalInterest: language === 'marathi' ? 'एकूण व्याज' : 'Total Interest',
     currency: language === 'marathi' ? '₹' : '₹',
@@ -63,43 +68,61 @@ const FDCalculator: React.FC = () => {
             </div>
           </div>
 
-          <div>
-            <div className="flex justify-between mb-4">
-              <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.interestRate}</label>
-              <span className="text-blue-900 font-bold">{interestRate}%</span>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <div className="flex justify-between mb-4">
+                <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.interestRate}</label>
+                <span className="text-blue-900 font-bold">{interestRate}%</span>
+              </div>
+              <input 
+                type="range" 
+                min="1" 
+                max="15" 
+                step="0.1"
+                value={interestRate}
+                onChange={(e) => setInterestRate(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#003366]"
+              />
             </div>
-            <input 
-              type="range" 
-              min="1" 
-              max="15" 
-              step="0.1"
-              value={interestRate}
-              onChange={(e) => setInterestRate(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#003366]"
-            />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-bold">
-              <span>1%</span>
-              <span>15%</span>
+
+            <div>
+              <div className="flex justify-between mb-4">
+                <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.tenure}</label>
+                <span className="text-blue-900 font-bold">{tenure} Yrs</span>
+              </div>
+              <input 
+                type="range" 
+                min="1" 
+                max="10" 
+                step="1"
+                value={tenure}
+                onChange={(e) => setTenure(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#003366]"
+              />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between mb-4">
-              <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.tenure}</label>
-              <span className="text-blue-900 font-bold">{tenure} Yrs</span>
-            </div>
-            <input 
-              type="range" 
-              min="1" 
-              max="10" 
-              step="1"
-              value={tenure}
-              onChange={(e) => setTenure(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#003366]"
-            />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-bold">
-              <span>1 Yr</span>
-              <span>10 Yrs</span>
+            <label className="block text-sm font-bold text-gray-600 uppercase tracking-wider mb-4">{labels.compounding}</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: labels.monthly, value: 12 },
+                { label: labels.quarterly, value: 4 },
+                { label: labels.halfYearly, value: 2 },
+                { label: labels.yearly, value: 1 },
+              ].map((freq) => (
+                <button
+                  key={freq.value}
+                  onClick={() => setCompoundingFrequency(freq.value)}
+                  className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                    compoundingFrequency === freq.value
+                      ? 'bg-[#003366] text-white border-[#003366] shadow-md'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-[#003366] hover:text-[#003366]'
+                  }`}
+                >
+                  {freq.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

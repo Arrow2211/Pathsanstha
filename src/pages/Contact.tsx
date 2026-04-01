@@ -88,9 +88,8 @@ const Contact = () => {
                     style={{ border: 0 }}
                     allowFullScreen={true}
                     loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
                     title="Google Maps"
-                    className="grayscale group-hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full transition-all duration-700"
                   ></iframe>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-slate-400 flex-col gap-4">

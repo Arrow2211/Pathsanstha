@@ -10,8 +10,6 @@
       "quickLinks": "महत्वाच्या लिंक्स",
       "privacyPolicy": "गोपनीयता धोरण",
       "termsOfService": "सेवा अटी",
-      "internetBanking": "इंटरनेट बँकिंग",
-      "ourBranches": "आमच्या शाखा",
       "staffLogin": "कर्मचारी लॉगिन"
     },
     "header": {
@@ -47,7 +45,7 @@
       "address": "जत, सांगली, महाराष्ट्र",
       "phone": "९४२०६७७६८१",
       "email": "v.p.jath99@gmail.com",
-      "googleMapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.456789!2d75.210000!3d17.050000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc14123456789ab%3A0x1234567890abcdef!2sJath%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1617123456789!5m2!1sen!2sin",
+      "googleMapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.45!2d75.22015!3d17.04738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc141b777777777%3A0x7777777777777777!2sShri%20Vishwakarma%20Gramin%20Bigarsheti%20Sahakari%20Patsanstha%20Marya%2C%20Jath!5e0!3m2!1sen!2sin!4v1711992651000!5m2!1sen!2sin",
       "form": {
         "name": "नाव",
         "email": "ईमेल",
@@ -123,8 +121,6 @@
       "quickLinks": "Quick Links",
       "privacyPolicy": "Privacy Policy",
       "termsOfService": "Terms of Service",
-      "internetBanking": "Internet Banking",
-      "ourBranches": "Our Branches",
       "staffLogin": "Staff Login"
     },
     "header": {
@@ -160,7 +156,7 @@
       "address": "Jath, Sangli, Maharashtra",
       "phone": "9420677681",
       "email": "v.p.jath99@gmail.com",
-      "googleMapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.456789!2d75.210000!3d17.050000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc14123456789ab%3A0x1234567890abcdef!2sJath%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1617123456789!5m2!1sen!2sin",
+      "googleMapsUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.45!2d75.22015!3d17.04738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc141b777777777%3A0x7777777777777777!2sShri%20Vishwakarma%20Gramin%20Bigarsheti%20Sahakari%20Patsanstha%20Marya%2C%20Jath!5e0!3m2!1sen!2sin!4v1711992651000!5m2!1sen!2sin",
       "form": {
         "name": "Name",
         "email": "Email",

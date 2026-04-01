@@ -3,6 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Landmark, Clock, UserCheck, Heart, ShieldCheck } from 'lucide-react';
 import FDCalculator from '../components/FDCalculator';
+import RDCalculator from '../components/RDCalculator';
 
 const Deposits = () => {
   const { t, language, deposits, recurringDeposits } = useLanguage();
@@ -114,6 +115,10 @@ const Deposits = () => {
 
           <div className="mb-24">
             <FDCalculator />
+          </div>
+
+          <div className="mb-24">
+            <RDCalculator />
           </div>
 
           {/* Features - Corporate Grid */}
