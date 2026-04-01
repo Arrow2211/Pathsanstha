@@ -5,8 +5,22 @@ import cors from "cors";
 import jwt from "jsonwebtoken";
 const { sign, verify } = jwt;
 import { createClient } from "@supabase/supabase-js";
+import { fileURLToPath } from 'url';
+import "dotenv/config";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log("Server script starting...");
+console.log("Debug Paths:", {
+  cwd: process.cwd(),
+  __dirname,
+  __filename,
+  env: {
+    VERCEL: process.env.VERCEL,
+    NODE_ENV: process.env.NODE_ENV
+  }
+});
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -689,10 +703,14 @@ async function startServer() {
     // Debug: check if data directory exists
     try {
       const dataPath = path.join(process.cwd(), "data");
-      const files = await fs.readdir(dataPath);
-      console.log(`Vercel: Data directory found at ${dataPath}. Files: ${files.join(", ")}`);
+      if (await fs.access(dataPath).then(() => true).catch(() => false)) {
+        const files = await fs.readdir(dataPath);
+        console.log(`Vercel: Data directory found at ${dataPath}. Files: ${files.join(", ")}`);
+      } else {
+        console.error(`Vercel: Data directory NOT found at ${dataPath}`);
+      }
     } catch (err: any) {
-      console.error(`Vercel: Data directory NOT found at ${process.cwd()}/data: ${err.message}`);
+      console.error(`Vercel: Error checking data directory: ${err.message}`);
     }
     return;
   }
