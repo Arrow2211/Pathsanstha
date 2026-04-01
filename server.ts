@@ -142,15 +142,26 @@ const authenticate = (req: any, res: any, next: any) => {
 
 // Helper to read local JSON data
 const readLocalJson = async (filename: string) => {
-  try {
-    const filePath = path.resolve(process.cwd(), "data", filename);
-    console.log(`Attempting to read local JSON: ${filePath}`);
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  } catch (error: any) {
-    console.error(`Error reading local JSON ${filename}:`, error.message);
-    return null;
+  const possiblePaths = [
+    path.join(process.cwd(), "data", filename),
+    path.join(process.cwd(), "api", "..", "data", filename),
+    path.join("/var/task", "data", filename),
+    path.resolve(process.cwd(), "data", filename)
+  ];
+
+  for (const filePath of possiblePaths) {
+    try {
+      const data = await fs.readFile(filePath, "utf-8");
+      const json = JSON.parse(data);
+      console.log(`Successfully read local JSON ${filename} from: ${filePath}`);
+      return json;
+    } catch (error: any) {
+      // Silently try next path
+    }
   }
+  
+  console.error(`Failed to read local JSON ${filename} from all possible paths. process.cwd(): ${process.cwd()}`);
+  return null;
 };
 
 // Helper to read/write data from Supabase
@@ -634,6 +645,14 @@ app.post("/api/loans", authenticate, async (req, res) => {
 async function startServer() {
   if (process.env.VERCEL) {
     console.log("Running on Vercel, skipping startServer initialization.");
+    // Debug: check if data directory exists
+    try {
+      const dataPath = path.join(process.cwd(), "data");
+      const files = await fs.readdir(dataPath);
+      console.log(`Vercel: Data directory found at ${dataPath}. Files: ${files.join(", ")}`);
+    } catch (err: any) {
+      console.error(`Vercel: Data directory NOT found at ${process.cwd()}/data: ${err.message}`);
+    }
     return;
   }
 

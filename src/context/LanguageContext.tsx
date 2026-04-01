@@ -50,6 +50,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         fetchJson('/api/loans'),
       ]);
 
+      console.log('API Responses:', { contentRes, statsRes, depositsRes, recurringRes, loansRes });
+
       if (contentRes && !contentRes.error && Object.keys(contentRes.marathi || {}).length > 0) {
         setContent(contentRes);
       } else {
