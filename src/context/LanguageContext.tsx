@@ -28,20 +28,43 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const fetchData = async () => {
     try {
+      const fetchJson = async (url: string) => {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            console.warn(`Fetch failed for ${url}: ${res.status} ${res.statusText}`);
+            return null;
+          }
+          return await res.json();
+        } catch (e) {
+          console.error(`Error fetching ${url}:`, e);
+          return null;
+        }
+      };
+
       const [contentRes, statsRes, depositsRes, recurringRes, loansRes] = await Promise.all([
-        fetch('/api/content').then(res => res.json()),
-        fetch('/api/stats').then(res => res.json()),
-        fetch('/api/deposits').then(res => res.json()),
-        fetch('/api/recurring-deposits').then(res => res.json()),
-        fetch('/api/loans').then(res => res.json()),
+        fetchJson('/api/content'),
+        fetchJson('/api/stats'),
+        fetchJson('/api/deposits'),
+        fetchJson('/api/recurring-deposits'),
+        fetchJson('/api/loans'),
       ]);
-      setContent(contentRes && !contentRes.error && Object.keys(contentRes.marathi || {}).length > 0 ? contentRes : null);
-      setStats(statsRes && !statsRes.error && statsRes.shareCapital ? statsRes : null);
-      setDeposits(Array.isArray(depositsRes) && depositsRes.length > 0 ? depositsRes : []);
-      setRecurringDeposits(Array.isArray(recurringRes) && recurringRes.length > 0 ? recurringRes : []);
-      setLoans(Array.isArray(loansRes) && loansRes.length > 0 ? loansRes : []);
+
+      if (contentRes && !contentRes.error && Object.keys(contentRes.marathi || {}).length > 0) {
+        setContent(contentRes);
+      } else {
+        console.warn('Content data is missing or invalid');
+      }
+
+      if (statsRes && !statsRes.error) {
+        setStats(statsRes);
+      }
+
+      setDeposits(Array.isArray(depositsRes) ? depositsRes : []);
+      setRecurringDeposits(Array.isArray(recurringRes) ? recurringRes : []);
+      setLoans(Array.isArray(loansRes) ? loansRes : []);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error in fetchData:', error);
     } finally {
       setLoading(false);
     }

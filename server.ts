@@ -140,6 +140,19 @@ const authenticate = (req: any, res: any, next: any) => {
   }
 };
 
+// Helper to read local JSON data
+const readLocalJson = async (filename: string) => {
+  try {
+    const filePath = path.resolve(process.cwd(), "data", filename);
+    console.log(`Attempting to read local JSON: ${filePath}`);
+    const data = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(data);
+  } catch (error: any) {
+    console.error(`Error reading local JSON ${filename}:`, error.message);
+    return null;
+  }
+};
+
 // Helper to read/write data from Supabase
 const getTableData = async (tableName: string) => {
   try {
@@ -254,7 +267,8 @@ app.post("/api/migrate", authenticate, async (req, res) => {
     
     // 1. Migrate Loans
     console.log("Migrating loans...");
-    const loansData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
+    const loansData = await readLocalJson("loans.json");
+    if (!loansData) throw new Error("Failed to read loans.json");
     for (const loan of loansData) {
       const { error } = await client.from("loans").upsert({
         id: loan.id,
@@ -273,7 +287,8 @@ app.post("/api/migrate", authenticate, async (req, res) => {
 
     // 2. Migrate Deposits
     console.log("Migrating deposits...");
-    const depositsData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
+    const depositsData = await readLocalJson("deposits.json");
+    if (!depositsData) throw new Error("Failed to read deposits.json");
     for (const dep of depositsData) {
       const { error } = await client.from("deposits").upsert({
         id: dep.id,
@@ -291,7 +306,8 @@ app.post("/api/migrate", authenticate, async (req, res) => {
 
     // 3. Migrate Recurring Deposits
     console.log("Migrating recurring deposits...");
-    const rdData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
+    const rdData = await readLocalJson("recurring_deposits.json");
+    if (!rdData) throw new Error("Failed to read recurring_deposits.json");
     for (const rd of rdData) {
       const { error } = await client.from("recurring_deposits").upsert({
         id: rd.id,
@@ -308,7 +324,8 @@ app.post("/api/migrate", authenticate, async (req, res) => {
 
     // 4. Migrate Stats
     console.log("Migrating stats...");
-    const statsData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
+    const statsData = await readLocalJson("stats.json");
+    if (!statsData) throw new Error("Failed to read stats.json");
     const { error: statsError } = await client.from("stats").upsert({
       id: 1,
       share_capital: statsData.shareCapital,
@@ -324,7 +341,8 @@ app.post("/api/migrate", authenticate, async (req, res) => {
 
     // 5. Migrate Content
     console.log("Migrating content...");
-    const contentData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
+    const contentData = await readLocalJson("content.json");
+    if (!contentData) throw new Error("Failed to read content.json");
     const sections = Object.keys(contentData.marathi);
     for (const section of sections) {
       const { error } = await client.from("app_content").upsert({
@@ -352,7 +370,8 @@ app.get("/api/content", async (req, res) => {
     const data = await getTableData("app_content");
     if (!data || data.length === 0) {
       console.log("Supabase app_content empty or missing, falling back to local JSON");
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
+      const localData = await readLocalJson("content.json");
+      if (!localData) return res.status(500).json({ error: "Failed to load content" });
       return res.json(localData);
     }
     
@@ -364,12 +383,9 @@ app.get("/api/content", async (req, res) => {
     res.json(content);
   } catch (error: any) {
     console.error("Error in /api/content:", error);
-    try {
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "content.json"), "utf-8"));
-      res.json(localData);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to load content" });
-    }
+    const localData = await readLocalJson("content.json");
+    if (!localData) return res.status(500).json({ error: "Failed to load content" });
+    res.json(localData);
   }
 });
 
@@ -401,7 +417,8 @@ app.get("/api/stats", async (req, res) => {
     const data = await getSingleRow("stats");
     if (!data) {
       console.log("Supabase stats empty or missing, falling back to local JSON");
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
+      const localData = await readLocalJson("stats.json");
+      if (!localData) return res.status(500).json({ error: "Failed to load stats" });
       return res.json(localData);
     }
     res.json({
@@ -412,12 +429,9 @@ app.get("/api/stats", async (req, res) => {
     });
   } catch (error: any) {
     console.error("Error in /api/stats:", error);
-    try {
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "stats.json"), "utf-8"));
-      res.json(localData);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to load stats" });
-    }
+    const localData = await readLocalJson("stats.json");
+    if (!localData) return res.status(500).json({ error: "Failed to load stats" });
+    res.json(localData);
   }
 });
 
@@ -443,8 +457,8 @@ app.get("/api/deposits", async (req, res) => {
   try {
     const data = await getTableData("deposits");
     if (!data || data.length === 0) {
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
-      return res.json(localData);
+      const localData = await readLocalJson("deposits.json");
+      return res.json(localData || []);
     }
     const formatted = data.map((d: any) => ({
       id: d.id,
@@ -454,8 +468,8 @@ app.get("/api/deposits", async (req, res) => {
     }));
     res.json(formatted);
   } catch (error: any) {
-    const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "deposits.json"), "utf-8"));
-    res.json(localData);
+    const localData = await readLocalJson("deposits.json");
+    res.json(localData || []);
   }
 });
 
@@ -506,8 +520,8 @@ app.get("/api/recurring-deposits", async (req, res) => {
   try {
     const data = await getTableData("recurring_deposits");
     if (!data || data.length === 0) {
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
-      return res.json(localData);
+      const localData = await readLocalJson("recurring_deposits.json");
+      return res.json(localData || []);
     }
     const formatted = data.map((d: any) => ({
       id: d.id,
@@ -516,8 +530,8 @@ app.get("/api/recurring-deposits", async (req, res) => {
     }));
     res.json(formatted);
   } catch (error: any) {
-    const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "recurring_deposits.json"), "utf-8"));
-    res.json(localData);
+    const localData = await readLocalJson("recurring_deposits.json");
+    res.json(localData || []);
   }
 });
 
@@ -562,8 +576,8 @@ app.get("/api/loans", async (req, res) => {
   try {
     const data = await getTableData("loans");
     if (!data || data.length === 0) {
-      const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
-      return res.json(localData);
+      const localData = await readLocalJson("loans.json");
+      return res.json(localData || []);
     }
     const formatted = data.map((d: any) => ({
       id: d.id,
@@ -573,8 +587,8 @@ app.get("/api/loans", async (req, res) => {
     }));
     res.json(formatted);
   } catch (error: any) {
-    const localData = JSON.parse(await fs.readFile(path.join(process.cwd(), "data", "loans.json"), "utf-8"));
-    res.json(localData);
+    const localData = await readLocalJson("loans.json");
+    res.json(localData || []);
   }
 });
 
