@@ -3,13 +3,13 @@ import path from "path";
 import fs from "fs/promises";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-const { sign, verify } = jwt;
 import { createClient } from "@supabase/supabase-js";
 import { fileURLToPath } from 'url';
-import "dotenv/config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const { sign, verify } = jwt;
 
 console.log("Server script starting...");
 console.log("Debug Paths:", {
@@ -747,6 +747,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
 
 export default app;
