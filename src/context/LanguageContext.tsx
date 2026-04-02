@@ -62,7 +62,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ]);
 
       clearTimeout(timeoutId);
-      console.log('API Responses:', { contentRes, statsRes, depositsRes, recurringRes, loansRes });
+      console.log('API Responses Received:', { 
+        content: !!contentRes, 
+        stats: !!statsRes, 
+        deposits: Array.isArray(depositsRes) ? depositsRes.length : 'not array',
+        recurring: Array.isArray(recurringRes) ? recurringRes.length : 'not array',
+        loans: Array.isArray(loansRes) ? loansRes.length : 'not array'
+      });
 
       if (contentRes && !contentRes.error && Object.keys(contentRes.marathi || {}).length > 0) {
         setContent(contentRes);

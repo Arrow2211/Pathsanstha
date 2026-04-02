@@ -113,13 +113,19 @@ console.log("Supabase Service Role Key:", SUPABASE_SERVICE_ROLE_KEY ? "Set" : "N
 let supabase: any = null;
 
 const getSupabase = () => {
-  if (!supabase) {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error("Supabase configuration missing. Please set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
+  try {
+    if (!supabase) {
+      if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+        console.warn("Supabase configuration missing. VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set.");
+        return null;
+      }
+      supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     }
-    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    return supabase;
+  } catch (err) {
+    console.error("Error initializing Supabase client:", err);
+    return null;
   }
-  return supabase;
 };
 
 export const app = express();
@@ -236,6 +242,10 @@ const readLocalJson = async (filename: string) => {
 const getTableData = async (tableName: string) => {
   try {
     const client = getSupabase();
+    if (!client) {
+      console.log(`Supabase client not available for ${tableName}, skipping fetch.`);
+      return null;
+    }
     let query = client.from(tableName).select("*");
     
     if (tableName === "app_content") {
