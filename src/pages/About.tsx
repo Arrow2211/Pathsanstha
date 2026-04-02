@@ -9,18 +9,18 @@ const About = () => {
   return (
     <div className="bg-surface min-h-screen">
       {/* Page Header - Modern Style */}
-      <div className="bg-primary py-32 md:py-40 text-white relative overflow-hidden">
+      <div className="bg-primary py-24 md:py-40 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-10 pointer-events-none"></div>
         <div className="section-container relative z-10">
           <motion.h1 
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter"
+            className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter"
           >
             <span className="text-gradient brightness-150">{t('about.title')}</span>
           </motion.h1>
-          <div className="w-24 h-2 bg-accent rounded-full"></div>
-          <p className="mt-10 text-blue-100 max-w-2xl opacity-90 text-xl md:text-2xl leading-relaxed font-medium">
+          <div className="w-16 md:w-24 h-1.5 md:h-2 bg-accent rounded-full"></div>
+          <p className="mt-8 md:mt-10 text-blue-100 max-w-2xl opacity-90 text-lg md:text-2xl leading-relaxed font-medium">
             {language === 'marathi' 
               ? 'आमचा वारसा आणि विश्वासाची परंपरा.' 
               : 'Our legacy of trust and commitment to excellence.'}

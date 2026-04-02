@@ -41,7 +41,7 @@ const Home = () => {
                   </span>
                 </div>
                 
-                <h1 className={`text-6xl md:text-7xl lg:text-8xl font-black text-primary mb-10 leading-[0.95] tracking-tight ${language === 'marathi' ? 'font-marathi' : ''}`}>
+                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-[0.95] tracking-tight ${language === 'marathi' ? 'font-marathi' : ''}`}>
                   <span className="block">{t('hero.title').split(' ').slice(0, -1).join(' ')}</span>
                   <span className="text-gradient">{t('hero.title').split(' ').slice(-1)}</span>
                 </h1>
@@ -100,11 +100,11 @@ const Home = () => {
                 <div className="absolute -bottom-12 -left-12 w-56 h-56 bg-primary/10 rounded-full blur-3xl"></div>
                 
                 {/* Main Image with Frame */}
-                <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,51,102,0.2)] border-[12px] border-white">
+                <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,51,102,0.2)] border-[8px] md:border-[12px] border-white">
                   <img 
                     src={t('hero.imageUrl') || "https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?auto=format&fit=crop&q=80&w=2070"} 
                     alt="Professional Banking" 
-                    className="w-full h-[550px] object-cover hover:scale-110 transition-transform duration-[2000ms]"
+                    className="w-full h-[300px] sm:h-[400px] md:h-[550px] object-cover hover:scale-110 transition-transform duration-[2000ms]"
                     referrerPolicy="no-referrer"
                   />
                   {/* Overlay Gradient */}
@@ -116,15 +116,15 @@ const Home = () => {
                   initial={{ x: 30, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.8, duration: 0.8 }}
-                  className="absolute -bottom-10 -right-10 lg:right-0 bg-white/90 backdrop-blur-xl p-8 rounded-[2.5rem] shadow-2xl border border-white/50 max-w-[280px] z-20"
+                  className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 lg:right-0 bg-white/90 backdrop-blur-xl p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl border border-white/50 max-w-[200px] md:max-w-[280px] z-20"
                 >
-                  <div className="flex items-center gap-5 mb-4">
-                    <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center text-accent">
-                      <TrendingUp size={24} />
+                  <div className="flex items-center gap-3 md:gap-5 mb-3 md:mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-accent/10 rounded-xl md:rounded-2xl flex items-center justify-center text-accent">
+                      <TrendingUp size={20} className="md:w-6 md:h-6" />
                     </div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Growth</span>
+                    <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Growth</span>
                   </div>
-                  <p className="text-base font-extrabold text-primary leading-snug">
+                  <p className="text-xs md:text-base font-extrabold text-primary leading-snug">
                     {language === 'marathi' ? 'तुमच्या प्रगतीसाठी आम्ही सदैव तत्पर' : 'Committed to your financial growth'}
                   </p>
                 </motion.div>
@@ -135,10 +135,10 @@ const Home = () => {
       </section>
 
       {/* Stats Bar - Modern & Impactful */}
-      <section className="bg-primary py-24 relative overflow-hidden">
+      <section className="bg-primary py-16 md:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-5 pointer-events-none"></div>
         <div className="section-container relative z-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
             {statCards.map((stat, idx) => (
               <motion.div 
                 key={idx}
@@ -146,15 +146,15 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center text-white lg:border-r last:border-none border-white/10 px-4"
+                className="text-center text-white lg:border-r last:border-none border-white/10 px-2 sm:px-4"
               >
-                <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-accent">
-                    <stat.icon size={24} />
+                <div className="flex justify-center mb-4 md:mb-6">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/5 flex items-center justify-center text-accent">
+                    <stat.icon size={20} className="md:w-6 md:h-6" />
                   </div>
                 </div>
-                <p className="text-[11px] uppercase font-black text-blue-200 tracking-[0.3em] mb-4">{stat.label}</p>
-                <p className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-white">
+                <p className="text-[10px] md:text-[11px] uppercase font-black text-blue-200 tracking-[0.2em] md:tracking-[0.3em] mb-2 md:mb-4">{stat.label}</p>
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tighter text-white break-words">
                   {stat.label.toLowerCase().includes('member') || stat.label.toLowerCase().includes('सभासद') 
                     ? stat.value 
                     : `₹${(stat.value || '').toString().replace('₹', '')}`
@@ -170,14 +170,14 @@ const Home = () => {
       <section className="section-padding bg-white relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-surface to-transparent"></div>
         <div className="section-container relative z-10">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-6">
+          <div className="text-center mb-16 md:mb-24">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-4 md:mb-6">
               {t('services.title')}
             </h2>
-            <div className="w-24 h-2 bg-accent mx-auto rounded-full"></div>
+            <div className="w-16 md:w-24 h-1.5 md:h-2 bg-accent mx-auto rounded-full"></div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {(Array.isArray(t('services.items')) ? t('services.items') : []).map((service: any, idx: number) => {
               const icons = [Landmark, TrendingUp, Users, ShieldCheck];
               const Icon = icons[idx % icons.length];
@@ -185,13 +185,13 @@ const Home = () => {
                 <motion.div 
                   key={idx}
                   whileHover={{ y: -10 }}
-                  className="card-modern group"
+                  className="card-modern group p-8 md:p-10"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-surface flex items-center justify-center text-accent mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                    <Icon size={32} strokeWidth={1.5} />
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-surface flex items-center justify-center text-accent mb-6 md:mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                    <Icon size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-2xl font-black mb-5 text-primary">{service.title}</h3>
-                  <p className="text-slate-500 text-base leading-relaxed">{service.desc}</p>
+                  <h3 className="text-xl md:text-2xl font-black mb-3 md:mb-5 text-primary uppercase tracking-tight">{service.title}</h3>
+                  <p className="text-slate-500 text-sm md:text-base leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">{service.desc}</p>
                 </motion.div>
               );
             })}
@@ -203,12 +203,12 @@ const Home = () => {
       <section className="section-padding bg-surface relative overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-5 pointer-events-none"></div>
         <div className="section-container relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-24">
+          <div className="flex flex-col lg:flex-row items-center gap-16 md:gap-24">
             <div className="flex-1 w-full order-2 lg:order-1">
-              <h2 className="text-4xl md:text-5xl font-black text-primary mb-16 text-center lg:text-left leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary mb-10 md:mb-16 text-center lg:text-left leading-tight tracking-tighter">
                 {t('trust.title')}
               </h2>
-              <div className="space-y-12">
+              <div className="space-y-8 md:space-y-12">
                 {(Array.isArray(t('trust.items')) ? t('trust.items') : []).map((item: any, idx: number) => (
                   <motion.div 
                     key={idx} 
@@ -216,14 +216,14 @@ const Home = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start space-x-8 group"
+                    className="flex items-start space-x-6 md:space-x-8 group"
                   >
-                    <div className="flex-shrink-0 w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-accent shadow-xl shadow-slate-200 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                      <ShieldCheck size={28} />
+                    <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-accent shadow-xl shadow-slate-200 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                      <ShieldCheck size={24} className="md:w-7 md:h-7" />
                     </div>
                     <div>
-                      <h4 className="font-black text-xl text-primary mb-3">{item.title}</h4>
-                      <p className="text-slate-500 text-base leading-relaxed">{item.desc}</p>
+                      <h4 className="font-black text-lg md:text-xl text-primary mb-2 md:mb-3 uppercase tracking-tight">{item.title}</h4>
+                      <p className="text-slate-500 text-sm md:text-base leading-relaxed opacity-80">{item.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -231,17 +231,17 @@ const Home = () => {
             </div>
             <div className="flex-1 w-full order-1 lg:order-2">
               <div className="relative">
-                <div className="absolute -inset-4 bg-accent/20 rounded-[3rem] blur-2xl"></div>
-                <div className="relative p-4 bg-white rounded-[3rem] shadow-2xl border border-slate-100">
+                <div className="absolute -inset-4 bg-accent/20 rounded-[2.5rem] md:rounded-[3rem] blur-2xl"></div>
+                <div className="relative p-3 md:p-4 bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-slate-100">
                   <img 
                     src={t('trust.imageUrl') || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=800"} 
                     alt="Trust" 
-                    className="rounded-[2.5rem] shadow-inner w-full h-auto object-cover aspect-[4/3]"
+                    className="rounded-[2rem] md:rounded-[2.5rem] shadow-inner w-full h-[300px] sm:h-[400px] md:h-auto object-cover aspect-[4/3]"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute -bottom-10 -right-10 bg-primary text-white p-10 rounded-[2.5rem] shadow-2xl border-b-8 border-accent hidden sm:block">
-                    <p className="text-5xl font-black mb-2">25+</p>
-                    <p className="text-[11px] uppercase font-black tracking-[0.3em] text-blue-200">Years of Trust</p>
+                  <div className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 bg-primary text-white p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl border-b-4 md:border-b-8 border-accent hidden sm:block">
+                    <p className="text-3xl md:text-5xl font-black mb-1 md:mb-2">25+</p>
+                    <p className="text-[8px] md:text-[11px] uppercase font-black tracking-[0.2em] md:tracking-[0.3em] text-blue-200">Years of Trust</p>
                   </div>
                 </div>
               </div>

@@ -103,10 +103,10 @@ const Header = () => {
                   />
                 )}
                 <div className="flex flex-col">
-                  <span className="text-base sm:text-lg md:text-xl font-bold leading-tight tracking-tight group-hover:text-[#C5A059] transition-colors">
+                  <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-tight tracking-tight group-hover:text-[#C5A059] transition-colors">
                     {t('header.bankName')}
                   </span>
-                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-[0.2em] text-[#C5A059] opacity-90">
+                  <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-[0.15em] md:tracking-[0.2em] text-[#C5A059] opacity-90">
                     {t('header.tagline')}
                   </span>
                 </div>
@@ -162,23 +162,37 @@ const Header = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#002244] border-t border-white/5 overflow-hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="md:hidden bg-[#002244] border-t border-white/5 overflow-hidden shadow-2xl"
           >
-            <div className="px-4 pt-2 pb-6 space-y-2">
-              {navItems.map((item) => (
-                <button
+            <div className="px-6 pt-4 pb-10 space-y-1">
+              {navItems.map((item, idx) => (
+                <motion.button
                   key={item.path}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
                   onClick={() => scrollToSection(item.path)}
-                  className={`block w-full text-left px-3 py-3 rounded-md text-sm font-bold uppercase tracking-widest hover:bg-[#003366] text-white ${
-                    activeSection === item.path ? 'text-[#C5A059]' : ''
+                  className={`flex items-center justify-between w-full text-left px-4 py-4 rounded-xl text-sm font-black uppercase tracking-[0.2em] transition-all ${
+                    activeSection === item.path 
+                      ? 'bg-[#003366] text-[#C5A059] border-l-4 border-[#C5A059]' 
+                      : 'text-blue-100 hover:bg-white/5'
                   }`}
                 >
-                  {item.name}
-                </button>
+                  <span>{item.name}</span>
+                  <ArrowRight size={16} className={`transition-transform ${activeSection === item.path ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'}`} />
+                </motion.button>
               ))}
+              
+              <div className="pt-6 mt-6 border-t border-white/5">
+                <div className="flex items-center space-x-4 px-4 text-blue-200/40">
+                  <Phone size={14} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">{t('contact.phone')}</span>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -203,9 +217,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#002244] text-white pt-20 pb-10 border-t-4 border-[#C5A059]">
+    <footer className="bg-[#002244] text-white pt-16 md:pt-20 pb-10 border-t-4 border-[#C5A059]">
       <div className="section-container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-2">
             <div className="flex items-center mb-6">
               {t('header.logoUrl') && (
@@ -216,7 +230,7 @@ const Footer = () => {
                   referrerPolicy="no-referrer"
                 />
               )}
-              <h3 className="text-xl md:text-2xl font-bold tracking-tight">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">
                 {t('header.bankName')}
               </h3>
             </div>
@@ -224,46 +238,46 @@ const Footer = () => {
               {t('hero.tagline')} {language === 'marathi' ? 'आम्ही तुमच्या आर्थिक प्रगतीसाठी कटिबद्ध आहोत.' : 'We are committed to your financial progress.'}
             </p>
             <div className="flex items-center space-x-4 p-4 bg-[#003366] rounded border border-white/5 inline-flex">
-              <ShieldCheck className="text-[#C5A059]" size={32} />
+              <ShieldCheck className="text-[#C5A059] flex-shrink-0" size={28} />
               <div>
-                <p className="text-[9px] md:text-[10px] uppercase font-bold tracking-widest text-blue-200">ISO 9001:2015 Certified</p>
-                <p className="text-xs font-bold">{t('about.regNo')}</p>
+                <p className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-widest text-blue-200">ISO 9001:2015 Certified</p>
+                <p className="text-[10px] sm:text-xs font-bold">{t('about.regNo')}</p>
               </div>
             </div>
           </div>
           
           <div>
-            <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-8">{t('nav.contact')}</h4>
-            <ul className="space-y-4 text-sm text-blue-100/80">
+            <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-6 md:mb-8">{t('nav.contact')}</h4>
+            <ul className="space-y-3 md:space-y-4 text-sm text-blue-100/80">
               <li className="flex items-start space-x-3">
                 <Phone size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span>{t('contact.phone')}</span>
+                <span className="text-xs sm:text-sm">{t('contact.phone')}</span>
               </li>
               <li className="flex items-start space-x-3">
                 <Mail size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span className="break-all">{t('contact.email')}</span>
+                <span className="text-xs sm:text-sm break-all">{t('contact.email')}</span>
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span className="leading-relaxed">{t('contact.address')}</span>
+                <span className="text-xs sm:text-sm leading-relaxed">{t('contact.address')}</span>
               </li>
             </ul>
           </div>
           
           <div>
-            <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-8">{t('nav.quickLinks')}</h4>
-            <ul className="space-y-3 text-sm text-blue-100/80">
-              <li><button onClick={() => scrollToSection('about')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.about')}</button></li>
-              <li><button onClick={() => scrollToSection('deposits')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.deposits')}</button></li>
-              <li><button onClick={() => scrollToSection('loans')} className="hover:text-[#C5A059] transition-colors flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.loans')}</button></li>
-              <li><Link to="/admin" className="hover:text-[#C5A059] transition-colors opacity-50 text-xs flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.staffLogin')}</Link></li>
+            <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-6 md:mb-8">{t('nav.quickLinks')}</h4>
+            <ul className="space-y-2 md:space-y-3 text-sm text-blue-100/80">
+              <li><button onClick={() => scrollToSection('about')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.about')}</button></li>
+              <li><button onClick={() => scrollToSection('deposits')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.deposits')}</button></li>
+              <li><button onClick={() => scrollToSection('loans')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.loans')}</button></li>
+              <li><Link to="/admin" className="hover:text-[#C5A059] transition-colors opacity-50 text-[10px] sm:text-xs flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.staffLogin')}</Link></li>
             </ul>
           </div>
         </div>
         
-        <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase font-bold tracking-widest text-blue-200/40 text-center md:text-left">
+        <div className="mt-16 md:mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] md:text-[10px] uppercase font-bold tracking-widest text-blue-200/40 text-center md:text-left">
           <p>© {new Date().getFullYear()} {t('header.bankName')}. All rights reserved.</p>
-          <div className="flex space-x-6">
+          <div className="flex space-x-4 md:space-x-6">
             <a href="#" className="hover:text-white transition-colors">{t('nav.privacyPolicy')}</a>
             <a href="#" className="hover:text-white transition-colors">{t('nav.termsOfService')}</a>
           </div>

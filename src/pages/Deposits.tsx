@@ -47,7 +47,7 @@ const Deposits = () => {
                 Effective from April 2024
               </span>
             </div>
-            <div className="overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
@@ -66,6 +66,28 @@ const Deposits = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile View for Deposits */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {Array.isArray(deposits) && deposits.map((d: any) => (
+                <div key={d.id} className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">{language === 'marathi' ? 'कालावधी' : 'Period'}</span>
+                    <span className="text-slate-700 font-bold text-right">{d.name[language]}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-2">
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest mb-1">{language === 'marathi' ? 'सर्वसाधारण' : 'General'}</p>
+                      <p className="text-xl font-black text-[#003366]">{d.general}</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest mb-1">{language === 'marathi' ? 'ज्येष्ठ/विधवा' : 'Senior/Widow'}</p>
+                      <p className="text-xl font-black text-[#C5A059]">{d.senior}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -92,7 +114,7 @@ const Deposits = () => {
                 <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">RD Interest Structure</h3>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-white px-3 py-1 rounded border border-slate-200">Monthly Compounding</span>
               </div>
-              <div className="overflow-x-auto">
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left min-w-[400px]">
                   <thead>
                     <tr className="bg-white border-b border-slate-100">
@@ -109,6 +131,22 @@ const Deposits = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile View for RD */}
+              <div className="sm:hidden divide-y divide-slate-50">
+                {(Array.isArray(recurringDeposits) ? recurringDeposits : []).map((rd: any, i: number) => (
+                  <div key={i} className="p-6 flex justify-between items-center">
+                    <div>
+                      <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest mb-1">{language === 'marathi' ? 'कालावधी' : 'Period'}</p>
+                      <p className="text-slate-700 font-bold">{rd.period[language]}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest mb-1">{language === 'marathi' ? 'व्याजदर' : 'Rate'}</p>
+                      <p className="text-2xl font-black text-[#003366]">{rd.rate}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

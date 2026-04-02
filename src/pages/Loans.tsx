@@ -25,12 +25,12 @@ const Loans = () => {
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="section-title text-white mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tighter"
           >
             {t('nav.loans')}
           </motion.h1>
-          <div className="title-underline bg-[#C5A059]"></div>
-          <p className="mt-8 text-blue-100 max-w-2xl opacity-90 text-lg leading-relaxed">
+          <div className="w-16 md:w-24 h-1.5 md:h-2 bg-[#C5A059] rounded-full"></div>
+          <p className="mt-8 text-blue-100 max-w-2xl opacity-90 text-base md:text-lg leading-relaxed">
             {language === 'marathi' 
               ? 'तुमच्या स्वप्नांना द्या पंख. सुलभ हप्ते आणि कमी व्याजदरात कर्ज उपलब्ध.' 
               : 'Empower your dreams with our flexible loan solutions. Competitive rates and hassle-free processing.'}
@@ -41,34 +41,34 @@ const Loans = () => {
 
       <div className="section-padding">
         <div className="section-container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 mb-16 md:mb-24">
             {Array.isArray(loans) && loans.map((loan: any) => {
               const Icon = getIcon(loan.name.english);
               return (
                 <motion.div 
                   key={loan.id}
                   whileHover={{ y: -8 }}
-                  className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-300"
+                  className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-300"
                 >
-                  <div className="p-10 flex-grow">
-                    <div className="w-16 h-16 bg-slate-50 rounded-xl flex items-center justify-center text-[#C5A059] mb-8 border border-slate-100 group-hover:bg-[#003366] group-hover:text-white transition-colors duration-300">
-                      <Icon size={32} strokeWidth={1.5} />
+                  <div className="p-6 md:p-10 flex-grow">
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-xl flex items-center justify-center text-[#C5A059] mb-6 md:mb-8 border border-slate-100 group-hover:bg-[#003366] group-hover:text-white transition-colors duration-300">
+                      <Icon size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-xl font-bold text-[#003366] mb-4 uppercase tracking-tight">{loan.name[language]}</h3>
-                    <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+                    <h3 className="text-lg md:text-xl font-bold text-[#003366] mb-3 md:mb-4 uppercase tracking-tight">{loan.name[language]}</h3>
+                    <p className="text-slate-500 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed opacity-80">
                       {loan.description[language]}
                     </p>
-                    <div className="pt-8 border-t border-slate-100">
+                    <div className="pt-6 md:pt-8 border-t border-slate-100">
                       <div className="flex items-end justify-between">
                         <div>
-                          <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">
+                          <p className="text-[9px] md:text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">
                             {language === 'marathi' ? 'व्याजदर' : 'Interest Rate'}
                           </p>
-                          <p className="text-3xl font-black text-[#003366]">{loan.rate}</p>
+                          <p className="text-2xl md:text-3xl font-black text-[#003366]">{loan.rate}</p>
                         </div>
                         <div className="flex items-center gap-2 text-[#C5A059]">
-                          <ShieldCheck size={16} />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">{language === 'marathi' ? 'सुलभ प्रक्रिया' : 'Easy Process'}</span>
+                          <ShieldCheck size={14} className="md:w-4 md:h-4" />
+                          <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{language === 'marathi' ? 'सुलभ प्रक्रिया' : 'Easy Process'}</span>
                         </div>
                       </div>
                     </div>
