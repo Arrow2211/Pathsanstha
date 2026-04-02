@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { defaultContent } from '../data/defaultContent';
 
 type Language = 'marathi' | 'english';
 
@@ -19,14 +20,24 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('marathi');
-  const [content, setContent] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
-  const [deposits, setDeposits] = useState<any>(null);
-  const [recurringDeposits, setRecurringDeposits] = useState<any>(null);
-  const [loans, setLoans] = useState<any>(null);
+  const [content, setContent] = useState<any>(defaultContent);
+  const [stats, setStats] = useState<any>({
+    shareCapital: "₹0",
+    totalDeposits: "₹0",
+    totalLoans: "₹0",
+    totalMembers: "0"
+  });
+  const [deposits, setDeposits] = useState<any>([]);
+  const [recurringDeposits, setRecurringDeposits] = useState<any>([]);
+  const [loans, setLoans] = useState<any>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    // Safety timeout to ensure loading state is cleared
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
     try {
       const fetchJson = async (url: string) => {
         try {
@@ -50,21 +61,22 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         fetchJson('/api/loans'),
       ]);
 
+      clearTimeout(timeoutId);
       console.log('API Responses:', { contentRes, statsRes, depositsRes, recurringRes, loansRes });
 
       if (contentRes && !contentRes.error && Object.keys(contentRes.marathi || {}).length > 0) {
         setContent(contentRes);
       } else {
-        console.warn('Content data is missing or invalid');
+        console.warn('Content data is missing or invalid, using default content');
       }
 
       if (statsRes && !statsRes.error) {
         setStats(statsRes);
       }
 
-      setDeposits(Array.isArray(depositsRes) ? depositsRes : []);
-      setRecurringDeposits(Array.isArray(recurringRes) ? recurringRes : []);
-      setLoans(Array.isArray(loansRes) ? loansRes : []);
+      if (Array.isArray(depositsRes)) setDeposits(depositsRes);
+      if (Array.isArray(recurringRes)) setRecurringDeposits(recurringRes);
+      if (Array.isArray(loansRes)) setLoans(loansRes);
     } catch (error) {
       console.error('Error in fetchData:', error);
     } finally {

@@ -127,12 +127,18 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health", (req, res) => {
+app.get("/api/health", async (req, res) => {
+  const dataExists = await fs.access(path.join(process.cwd(), "data")).then(() => true).catch(() => false);
+  const contentExists = await fs.access(path.join(process.cwd(), "data", "content.json")).then(() => true).catch(() => false);
+  
   res.json({ 
     status: "ok", 
     supabase: !!SUPABASE_URL,
     env: process.env.NODE_ENV,
-    vercel: !!process.env.VERCEL
+    vercel: !!process.env.VERCEL,
+    dataDir: dataExists,
+    contentJson: contentExists,
+    cwd: process.cwd()
   });
 });
 
@@ -211,11 +217,18 @@ const readLocalJson = async (filename: string) => {
       console.log(`Successfully read local JSON ${filename} from: ${filePath}`);
       return json;
     } catch (error: any) {
-      // Silently try next path
+      console.log(`Failed to read ${filename} from ${filePath}: ${error.message}`);
     }
   }
   
-  console.error(`Failed to read local JSON ${filename} from all possible paths. process.cwd(): ${process.cwd()}`);
+  console.error(`Failed to read local JSON ${filename} from all possible paths.`);
+  console.log("Current Directory (process.cwd()):", process.cwd());
+  console.log("Directory Name (__dirname):", __dirname);
+  try {
+    const rootFiles = await fs.readdir(process.cwd());
+    console.log("Files in process.cwd():", rootFiles.join(", "));
+  } catch (e) {}
+  
   return null;
 };
 
