@@ -6,7 +6,7 @@ import FDCalculator from '../components/FDCalculator';
 import RDCalculator from '../components/RDCalculator';
 
 const Deposits = () => {
-  const { t, language, deposits, recurringDeposits } = useLanguage();
+  const { t, language, deposits, recurringDeposits, rdMaturityTable } = useLanguage();
 
   return (
     <div className="bg-white">
@@ -147,6 +147,35 @@ const Deposits = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* RD Maturity Table */}
+              <div className="bg-slate-50 p-6 md:p-8 border-t border-b border-slate-200 mt-8">
+                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">
+                  {language === 'marathi' ? 'पुनरावृत्ती ठेव परिपक्वता तक्ता' : 'RD Maturity Value Table'}
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left min-w-[500px]">
+                  <thead>
+                    <tr className="bg-white border-b border-slate-100">
+                      <th className="px-8 py-4 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? 'रक्कम' : 'Amount'}</th>
+                      <th className="px-8 py-4 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? '१ वर्ष' : '1 Year'}</th>
+                      <th className="px-8 py-4 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? '२ वर्षे' : '2 Years'}</th>
+                      <th className="px-8 py-4 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? '३ वर्षे' : '3 Years'}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {(Array.isArray(rdMaturityTable) ? rdMaturityTable : []).map((row: any, i: number) => (
+                      <tr key={i} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-8 py-4 text-slate-700 font-bold">₹{row.amount}</td>
+                        <td className="px-8 py-4 text-[#003366] font-bold">₹{row.year1}</td>
+                        <td className="px-8 py-4 text-[#003366] font-bold">₹{row.year2}</td>
+                        <td className="px-8 py-4 text-[#003366] font-bold">₹{row.year3}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

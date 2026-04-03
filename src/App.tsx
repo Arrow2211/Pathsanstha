@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
-import { Globe, Phone, Mail, MapPin, Menu, X, ShieldCheck, TrendingUp, Users, Landmark, ArrowRight } from 'lucide-react';
+import { Globe, Phone, Mail, MapPin, Menu, X, ShieldCheck, TrendingUp, Users, Landmark, ArrowRight, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Pages
@@ -14,11 +14,20 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (hash) {
+      const element = document.getElementById(hash.replace('#', ''));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]);
 
   return null;
 };
@@ -76,37 +85,41 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 shadow-md">
-      {/* Top Bar - Traditional Bank Style */}
-      <div className="bg-[#002244] text-white py-2 hidden sm:block border-b border-white/5">
-        <div className="section-container flex justify-between items-center text-[10px] md:text-[11px] font-bold tracking-widest uppercase opacity-80">
-          <div className="flex space-x-4 md:space-x-6">
-            <span className="flex items-center"><Phone size={12} className="mr-2 text-[#C5A059]" /> {t('contact.phone')}</span>
-            <span className="flex items-center"><Mail size={12} className="mr-2 text-[#C5A059]" /> {t('contact.email')}</span>
+    <header className="sticky top-0 z-50 glass-header">
+      {/* Top Bar - Refined */}
+      <div className="bg-primary-dark text-white/70 py-2.5 hidden sm:block">
+        <div className="section-container flex justify-between items-center text-[10px] font-bold tracking-[0.2em] uppercase">
+          <div className="flex space-x-8">
+            <span className="flex items-center hover:text-white transition-colors cursor-pointer"><Phone size={12} className="mr-2 text-accent" /> {t('contact.phone')}</span>
+            <span className="flex items-center hover:text-white transition-colors cursor-pointer"><Mail size={12} className="mr-2 text-accent" /> {t('contact.email')}</span>
           </div>
-          <div className="flex space-x-4 md:space-x-6">
+          <div className="flex items-center space-x-6">
+            <span className="flex items-center"><MapPin size={12} className="mr-2 text-accent" /> {t('contact.address').split(',')[0]}</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-[#003366] text-white">
+      <div className="py-4">
         <div className="section-container">
-          <div className="flex justify-between h-20 items-center">
+          <div className="flex justify-between h-16 items-center">
             <div className="flex items-center">
               <Link to="/" className="flex items-center group" onClick={() => scrollToSection('home')}>
                 {t('header.logoUrl') && (
-                  <img 
-                    src={t('header.logoUrl')} 
-                    alt="Logo" 
-                    className="h-12 w-12 mr-3 object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-accent/20 rounded-full blur-sm group-hover:bg-accent/40 transition-all"></div>
+                    <img 
+                      src={t('header.logoUrl')} 
+                      alt="Logo" 
+                      className="h-12 w-12 relative z-10 mr-4 object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
                 )}
                 <div className="flex flex-col">
-                  <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-tight tracking-tight group-hover:text-[#C5A059] transition-colors">
+                  <span className="text-lg md:text-xl font-extrabold leading-none tracking-tighter text-primary group-hover:text-accent transition-colors">
                     {t('header.bankName')}
                   </span>
-                  <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-[0.15em] md:tracking-[0.2em] text-[#C5A059] opacity-90">
+                  <span className="text-[9px] uppercase font-black tracking-[0.3em] text-accent/80 mt-1">
                     {t('header.tagline')}
                   </span>
                 </div>
@@ -114,26 +127,26 @@ const Header = () => {
             </div>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex space-x-6 lg:space-x-8 items-center">
+            <nav className="hidden md:flex space-x-10 items-center">
               {navItems.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => scrollToSection(item.path)}
-                  className={`text-[11px] lg:text-xs font-bold uppercase tracking-widest hover:text-[#C5A059] transition-colors relative py-2 ${
-                    activeSection === item.path ? 'text-[#C5A059]' : ''
+                  className={`text-[11px] font-black uppercase tracking-[0.2em] hover:text-accent transition-all relative py-2 ${
+                    activeSection === item.path ? 'text-accent' : 'text-primary/70'
                   }`}
                 >
                   {item.name}
                   {activeSection === item.path && (
-                    <motion.div layoutId="nav-underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-[#C5A059]" />
+                    <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 w-full h-0.5 bg-accent" />
                   )}
                 </button>
               ))}
               <button
                 onClick={() => setLanguage(language === 'marathi' ? 'english' : 'marathi')}
-                className="flex items-center space-x-2 bg-[#002244] px-3 py-2 rounded border border-white/10 hover:bg-[#001a33] transition-colors text-[10px] font-bold uppercase tracking-widest"
+                className="flex items-center space-x-2 bg-primary/5 hover:bg-primary/10 text-primary px-4 py-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest border border-primary/10"
               >
-                <Globe size={14} className="text-[#C5A059]" />
+                <Globe size={14} className="text-accent" />
                 <span>{language === 'marathi' ? 'English' : 'मराठी'}</span>
               </button>
             </nav>
@@ -202,12 +215,13 @@ const Header = () => {
 };
 
 const Footer = () => {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
-      window.location.href = `/#${id}`;
+      navigate(`/#${id}`);
       return;
     }
     const element = document.getElementById(id);
@@ -217,69 +231,108 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#002244] text-white pt-16 md:pt-20 pb-10 border-t-4 border-[#C5A059]">
-      <div className="section-container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-8">
-          <div className="sm:col-span-2 lg:col-span-2">
-            <div className="flex items-center mb-6">
+    <footer className="bg-primary-dark text-white pt-24 pb-12 relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent via-accent-light to-accent"></div>
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+
+      <div className="section-container relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+          <div className="space-y-8">
+            <div className="flex items-center">
               {t('header.logoUrl') && (
                 <img 
                   src={t('header.logoUrl')} 
                   alt="Logo" 
-                  className="h-10 w-10 mr-3 object-contain"
+                  className="h-12 w-12 mr-4 brightness-0 invert"
                   referrerPolicy="no-referrer"
                 />
               )}
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">
-                {t('header.bankName')}
-              </h3>
-            </div>
-            <p className="text-blue-200/60 text-sm mb-8 max-w-md leading-relaxed">
-              {t('hero.tagline')} {language === 'marathi' ? 'आम्ही तुमच्या आर्थिक प्रगतीसाठी कटिबद्ध आहोत.' : 'We are committed to your financial progress.'}
-            </p>
-            <div className="flex items-center space-x-4 p-4 bg-[#003366] rounded border border-white/5 inline-flex">
-              <ShieldCheck className="text-[#C5A059] flex-shrink-0" size={28} />
-              <div>
-                <p className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-widest text-blue-200">ISO 9001:2015 Certified</p>
-                <p className="text-[10px] sm:text-xs font-bold">{t('about.regNo')}</p>
+              <div className="flex flex-col">
+                <span className="text-xl font-black tracking-tighter">{t('header.bankName')}</span>
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-accent">{t('header.tagline')}</span>
               </div>
             </div>
+            <p className="text-white/50 text-sm leading-relaxed font-medium">
+              {t('footer.aboutText') || 'Empowering our community through trusted financial solutions and dedicated service for generations.'}
+            </p>
+            <div className="flex space-x-5">
+              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                <a key={i} href="#" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-accent hover:text-white transition-all hover:-translate-y-1">
+                  <Icon size={18} />
+                </a>
+              ))}
+            </div>
           </div>
-          
+
           <div>
-            <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-6 md:mb-8">{t('nav.contact')}</h4>
-            <ul className="space-y-3 md:space-y-4 text-sm text-blue-100/80">
-              <li className="flex items-start space-x-3">
-                <Phone size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span className="text-xs sm:text-sm">{t('contact.phone')}</span>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-10">{t('nav.quickLinks')}</h4>
+            <ul className="space-y-5">
+              {['about', 'deposits', 'loans', 'contact'].map((id) => (
+                <li key={id}>
+                  <button
+                    onClick={() => scrollToSection(id)}
+                    className="text-white/60 hover:text-accent transition-colors text-sm font-semibold flex items-center group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent/0 group-hover:bg-accent mr-0 group-hover:mr-3 transition-all duration-300"></span>
+                    {t(`nav.${id}`)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-10">{t('nav.contact')}</h4>
+            <ul className="space-y-6">
+              <li className="flex items-start group">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mr-4 group-hover:bg-accent/20 transition-colors shrink-0">
+                  <MapPin size={18} className="text-accent" />
+                </div>
+                <span className="text-white/60 text-sm leading-relaxed font-medium">{t('contact.address')}</span>
               </li>
-              <li className="flex items-start space-x-3">
-                <Mail size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span className="text-xs sm:text-sm break-all">{t('contact.email')}</span>
+              <li className="flex items-center group">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mr-4 group-hover:bg-accent/20 transition-colors shrink-0">
+                  <Phone size={18} className="text-accent" />
+                </div>
+                <span className="text-white/60 text-sm font-medium">{t('contact.phone')}</span>
               </li>
-              <li className="flex items-start space-x-3">
-                <MapPin size={16} className="text-[#C5A059] mt-1 flex-shrink-0" />
-                <span className="text-xs sm:text-sm leading-relaxed">{t('contact.address')}</span>
+              <li className="flex items-center group">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mr-4 group-hover:bg-accent/20 transition-colors shrink-0">
+                  <Mail size={18} className="text-accent" />
+                </div>
+                <span className="text-white/60 text-sm font-medium">{t('contact.email')}</span>
               </li>
             </ul>
           </div>
-          
+
           <div>
-            <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059] mb-6 md:mb-8">{t('nav.quickLinks')}</h4>
-            <ul className="space-y-2 md:space-y-3 text-sm text-blue-100/80">
-              <li><button onClick={() => scrollToSection('about')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.about')}</button></li>
-              <li><button onClick={() => scrollToSection('deposits')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.deposits')}</button></li>
-              <li><button onClick={() => scrollToSection('loans')} className="hover:text-[#C5A059] transition-colors flex items-center text-xs sm:text-sm"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.loans')}</button></li>
-              <li><Link to="/admin" className="hover:text-[#C5A059] transition-colors opacity-50 text-[10px] sm:text-xs flex items-center"><ArrowRight size={12} className="mr-2 opacity-50" /> {t('nav.staffLogin')}</Link></li>
-            </ul>
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-10">Newsletter</h4>
+            <p className="text-white/50 text-sm mb-6 font-medium">Subscribe to get the latest updates and offers.</p>
+            <div className="relative">
+              <input 
+                type="email" 
+                placeholder="Your email address" 
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:border-accent transition-colors pr-12 font-medium"
+              />
+              <button className="absolute right-2 top-2 bottom-2 w-10 bg-accent rounded-xl flex items-center justify-center hover:bg-accent-dark transition-colors">
+                <ArrowRight size={18} />
+              </button>
+            </div>
+            <div className="mt-8">
+              <Link to="/admin" className="text-[10px] uppercase font-bold tracking-widest text-white/30 hover:text-accent transition-colors">
+                Staff Login
+              </Link>
+            </div>
           </div>
         </div>
-        
-        <div className="mt-16 md:mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] md:text-[10px] uppercase font-bold tracking-widest text-blue-200/40 text-center md:text-left">
-          <p>© {new Date().getFullYear()} {t('header.bankName')}. All rights reserved.</p>
-          <div className="flex space-x-4 md:space-x-6">
-            <a href="#" className="hover:text-white transition-colors">{t('nav.privacyPolicy')}</a>
-            <a href="#" className="hover:text-white transition-colors">{t('nav.termsOfService')}</a>
+
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[11px] font-bold uppercase tracking-widest text-white/30">
+          <p>© {new Date().getFullYear()} {t('header.bankName')}. All Rights Reserved.</p>
+          <div className="flex space-x-8 mt-6 md:mt-0">
+            <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-accent transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>
@@ -317,8 +370,17 @@ const AppContent = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-blue-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-900"></div>
+      <div className="h-screen flex flex-col items-center justify-center bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-pattern-grid opacity-10"></div>
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="relative mb-8">
+            <div className="absolute -inset-4 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
+            <div className="w-24 h-24 rounded-full border-t-4 border-accent animate-spin"></div>
+          </div>
+          <div className="text-primary font-black uppercase tracking-[0.5em] text-xs animate-pulse">
+            Loading Excellence
+          </div>
+        </div>
       </div>
     );
   }
