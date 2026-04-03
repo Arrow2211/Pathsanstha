@@ -1,9 +1,9 @@
 [
-  { "id": "1", "amount": "100", "oneYear": "1256", "twoYears": "2623", "threeYears": "4109" },
-  { "id": "2", "amount": "200", "oneYear": "2513", "twoYears": "5246", "threeYears": "8219" },
-  { "id": "3", "amount": "300", "oneYear": "3769", "twoYears": "7869", "threeYears": "12328" },
-  { "id": "4", "amount": "500", "oneYear": "6282", "twoYears": "13115", "threeYears": "20547" },
-  { "id": "5", "amount": "1000", "oneYear": "12563", "twoYears": "26229", "threeYears": "41094" },
-  { "id": "6", "amount": "1500", "oneYear": "18845", "twoYears": "39344", "threeYears": "61641" },
-  { "id": "7", "amount": "2000", "oneYear": "25127", "twoYears": "52459", "threeYears": "82189" }
+  { "amount": 100, "year1": 1256, "year2": 2623, "year3": 4109 },
+  { "amount": 200, "year1": 2513, "year2": 5246, "year3": 8219 },
+  { "amount": 300, "year1": 3769, "year2": 7869, "year3": 12328 },
+  { "amount": 500, "year1": 6282, "year2": 13115, "year3": 20547 },
+  { "amount": 1000, "year1": 12563, "year2": 26229, "year3": 41094 },
+  { "amount": 1500, "year1": 18845, "year2": 39344, "year3": 61641 },
+  { "amount": 2000, "year1": 25127, "year2": 52459, "year3": 82189 }
 ]

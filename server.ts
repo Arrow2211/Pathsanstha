@@ -82,8 +82,8 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPA
  *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
  * );
  * 
- * -- 6. Create rd_maturity_table
- * CREATE TABLE IF NOT EXISTS rd_maturity_table (
+ * -- 6. Create rd_maturity
+ * CREATE TABLE IF NOT EXISTS rd_maturity (
  *   amount INTEGER PRIMARY KEY,
  *   year1 INTEGER,
  *   year2 INTEGER,
@@ -291,7 +291,7 @@ const getTableData = async (tableName: string) => {
     
     if (tableName === "app_content") {
       query = query.order("section_key", { ascending: true });
-    } else if (tableName === "rd_maturity_table") {
+    } else if (tableName === "rd_maturity") {
       query = query.order("amount", { ascending: true });
     } else {
       query = query.order("id", { ascending: true });
@@ -463,10 +463,10 @@ app.post("/api/migrate", authenticate, async (req, res) => {
     
     // 3.5 Migrate RD Maturity Table
     console.log("Migrating RD maturity table...");
-    const rdMaturityData = await readLocalJson("rd_maturity_table.json");
+    const rdMaturityData = await readLocalJson("rd_maturity.json");
     if (rdMaturityData) {
       for (const row of rdMaturityData) {
-        const { error } = await client.from("rd_maturity_table").upsert({
+        const { error } = await client.from("rd_maturity").upsert({
           amount: row.amount,
           year1: row.year1,
           year2: row.year2,
@@ -476,7 +476,7 @@ app.post("/api/migrate", authenticate, async (req, res) => {
           console.error(`RD maturity table migration failed for amount ${row.amount}:`, error.message);
         }
       }
-      results.rd_maturity_table = rdMaturityData.length;
+      results.rd_maturity = rdMaturityData.length;
     }
 
     // 4. Migrate Stats
@@ -692,31 +692,31 @@ app.get("/api/recurring-deposits", async (req, res) => {
   }
 });
 
-app.get("/api/rd-maturity-table", async (req, res) => {
+app.get("/api/rd-maturity", async (req, res) => {
   try {
-    const data = await getTableData("rd_maturity_table");
+    const data = await getTableData("rd_maturity");
     if (!data || data.length === 0) {
-      const localData = await readLocalJson("rd_maturity_table.json");
+      const localData = await readLocalJson("rd_maturity.json");
       return res.json(localData || []);
     }
     res.json(data);
   } catch (error: any) {
-    const localData = await readLocalJson("rd_maturity_table.json");
+    const localData = await readLocalJson("rd_maturity.json");
     res.json(localData || []);
   }
 });
 
-app.post("/api/rd-maturity-table", authenticate, async (req, res) => {
+app.post("/api/rd-maturity", authenticate, async (req, res) => {
   try {
     const client = getSupabase();
     const data = req.body;
     
     // Delete all existing rows first to handle removals
-    const { error: deleteError } = await client.from("rd_maturity_table").delete().neq("amount", -1);
-    if (deleteError) console.error("Error clearing rd_maturity_table:", deleteError.message);
+    const { error: deleteError } = await client.from("rd_maturity").delete().neq("amount", -1);
+    if (deleteError) console.error("Error clearing rd_maturity:", deleteError.message);
 
     for (const row of data) {
-      const { error } = await client.from("rd_maturity_table").upsert({
+      const { error } = await client.from("rd_maturity").upsert({
         amount: row.amount,
         year1: row.year1,
         year2: row.year2,

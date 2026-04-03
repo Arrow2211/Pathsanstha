@@ -6,7 +6,7 @@ import FDCalculator from '../components/FDCalculator';
 import RDCalculator from '../components/RDCalculator';
 
 const Deposits = () => {
-  const { t, language, deposits, recurringDeposits, rdMaturityTable } = useLanguage();
+  const { t, language, deposits, recurringDeposits, rdMaturity } = useLanguage();
 
   return (
     <div className="bg-white">
@@ -166,7 +166,7 @@ const Deposits = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {(Array.isArray(rdMaturityTable) ? rdMaturityTable : []).map((row: any, i: number) => (
+                    {(Array.isArray(rdMaturity) ? rdMaturity : []).map((row: any, i: number) => (
                       <tr key={i} className="hover:bg-slate-50 transition-colors">
                         <td className="px-8 py-4 text-slate-700 font-bold">₹{row.amount}</td>
                         <td className="px-8 py-4 text-[#003366] font-bold">₹{row.year1}</td>
