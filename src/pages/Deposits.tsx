@@ -1,12 +1,12 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
-import { Landmark, Clock, UserCheck, Heart, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Landmark, Clock, UserCheck, Heart, ShieldCheck } from 'lucide-react';
 import FDCalculator from '../components/FDCalculator';
 import RDCalculator from '../components/RDCalculator';
 
 const Deposits = () => {
-  const { t, language, deposits, recurringDeposits, rdMaturity } = useLanguage();
+  const { t, language, deposits, recurringDeposits } = useLanguage();
 
   return (
     <div className="bg-white">
@@ -148,71 +148,6 @@ const Deposits = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* RD Maturity Table */}
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden mb-20">
-            <div className="bg-[#003366] p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between border-b-4 border-[#C5A059] gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#C5A059]">
-                  <TrendingUp size={28} />
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest">
-                  {language === 'marathi' ? 'पुनरावृत्ती ठेव (RD) मॅच्युरिटी तक्ता' : 'Recurring Deposit (RD) Maturity Table'}
-                </h2>
-              </div>
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
-                Effective from April 2026
-              </span>
-            </div>
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">{language === 'marathi' ? 'मासिक ठेव (₹)' : 'Monthly Deposit (₹)'}</th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">{language === 'marathi' ? '१ वर्ष' : '1 Year'}</th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">{language === 'marathi' ? '२ वर्षे' : '2 Years'}</th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">{language === 'marathi' ? '३ वर्षे' : '3 Years'}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {Array.isArray(rdMaturity) && rdMaturity.map((m: any) => (
-                    <tr key={m.id} className="hover:bg-slate-50 transition-colors group">
-                      <td className="px-8 py-6 text-slate-700 font-bold">₹{m.amount}</td>
-                      <td className="px-8 py-6 text-[#003366] font-black text-xl">₹{m.oneYear}</td>
-                      <td className="px-8 py-6 text-[#003366] font-black text-xl">₹{m.twoYears}</td>
-                      <td className="px-8 py-6 text-[#C5A059] font-black text-xl">₹{m.threeYears}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile View for RD Maturity */}
-            <div className="md:hidden divide-y divide-slate-100">
-              {Array.isArray(rdMaturity) && rdMaturity.map((m: any) => (
-                <div key={m.id} className="p-6 space-y-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">{language === 'marathi' ? 'मासिक ठेव' : 'Monthly Deposit'}</span>
-                    <span className="text-slate-700 font-bold text-right">₹{m.amount}</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 pt-2">
-                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                      <p className="text-[8px] uppercase font-bold text-slate-400 tracking-widest mb-1">1 Year</p>
-                      <p className="text-sm font-black text-[#003366]">₹{m.oneYear}</p>
-                    </div>
-                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                      <p className="text-[8px] uppercase font-bold text-slate-400 tracking-widest mb-1">2 Years</p>
-                      <p className="text-sm font-black text-[#003366]">₹{m.twoYears}</p>
-                    </div>
-                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                      <p className="text-[8px] uppercase font-bold text-slate-400 tracking-widest mb-1">3 Years</p>
-                      <p className="text-sm font-black text-[#C5A059]">₹{m.threeYears}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 

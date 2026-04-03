@@ -1,9 +1,0 @@
-[
-  { "id": "1", "amount": "100", "oneYear": "1256", "twoYears": "2623", "threeYears": "4109" },
-  { "id": "2", "amount": "200", "oneYear": "2513", "twoYears": "5246", "threeYears": "8219" },
-  { "id": "3", "amount": "300", "oneYear": "3769", "twoYears": "7869", "threeYears": "12328" },
-  { "id": "4", "amount": "500", "oneYear": "6282", "twoYears": "13115", "threeYears": "20547" },
-  { "id": "5", "amount": "1000", "oneYear": "12563", "twoYears": "26229", "threeYears": "41094" },
-  { "id": "6", "amount": "1500", "oneYear": "18845", "twoYears": "39344", "threeYears": "61641" },
-  { "id": "7", "amount": "2000", "oneYear": "25127", "twoYears": "52459", "threeYears": "82189" }
-]

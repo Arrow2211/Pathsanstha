@@ -8,14 +8,13 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { content, stats, deposits, recurringDeposits, rdMaturity, loans, loading, refreshData } = useLanguage();
+  const { content, stats, deposits, recurringDeposits, loans, loading, refreshData } = useLanguage();
   const [activeTab, setActiveTab] = useState('stats');
   const [editLang, setEditLang] = useState<'marathi' | 'english'>('marathi');
   const [localStats, setLocalStats] = useState<any>(null);
   const [localContent, setLocalContent] = useState<any>(null);
   const [localDeposits, setLocalDeposits] = useState<any>(null);
   const [localRecurringDeposits, setLocalRecurringDeposits] = useState<any>(null);
-  const [localRdMaturity, setLocalRdMaturity] = useState<any>(null);
   const [localLoans, setLocalLoans] = useState<any>(null);
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [supabaseStatus, setSupabaseStatus] = useState<{ connected: boolean; message?: string; error?: string } | null>(null);
@@ -77,9 +76,8 @@ const AdminDashboard = () => {
     if (content) setLocalContent(JSON.parse(JSON.stringify(content)));
     if (deposits) setLocalDeposits([...deposits]);
     if (recurringDeposits) setLocalRecurringDeposits([...recurringDeposits]);
-    if (rdMaturity) setLocalRdMaturity([...rdMaturity]);
     if (loans) setLocalLoans([...loans]);
-  }, [stats, content, deposits, recurringDeposits, rdMaturity, loans, navigate]);
+  }, [stats, content, deposits, recurringDeposits, loans, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -169,13 +167,6 @@ const AdminDashboard = () => {
           >
             <Landmark size={20} />
             Recurring Deposits
-          </button>
-          <button 
-            onClick={() => setActiveTab('rd-maturity')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'rd-maturity' ? 'bg-blue-800 shadow-inner' : 'hover:bg-blue-800/50'}`}
-          >
-            <TrendingUp size={20} />
-            RD Maturity Data
           </button>
           <button 
             onClick={() => setActiveTab('loans')}
@@ -292,17 +283,7 @@ CREATE TABLE IF NOT EXISTS recurring_deposits (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Create rd_maturity table
-CREATE TABLE IF NOT EXISTS rd_maturity (
-  id TEXT PRIMARY KEY,
-  amount TEXT,
-  one_year TEXT,
-  two_years TEXT,
-  three_years TEXT,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- 7. Create enquiries table
+-- 6. Create enquiries table
 CREATE TABLE IF NOT EXISTS enquiries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -1083,101 +1064,6 @@ NOTIFY pgrst, 'reload schema';`;
                             const newD = [...localRecurringDeposits];
                             newD[idx].rate = e.target.value;
                             setLocalRecurringDeposits(newD);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-200"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'rd-maturity' && (
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">RD Maturity Data</h2>
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => setLocalRdMaturity(JSON.parse(JSON.stringify(rdMaturity)))}
-                    className="text-gray-500 hover:text-gray-700 font-bold text-sm px-4"
-                  >
-                    Discard Changes
-                  </button>
-                  <button 
-                    onClick={() => {
-                      const newId = localRdMaturity.length > 0 ? Math.max(...localRdMaturity.map((d: any) => parseInt(d.id))) + 1 : 1;
-                      setLocalRdMaturity([...localRdMaturity, { id: newId.toString(), amount: '', oneYear: '', twoYears: '', threeYears: '' }]);
-                    }}
-                    className="bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-green-700"
-                  >
-                    <Plus size={18} /> Add New
-                  </button>
-                  <button onClick={() => save('rd-maturity', localRdMaturity)} className="bg-blue-900 text-white px-6 py-2 rounded-xl flex items-center gap-2 hover:bg-blue-800">
-                    <Save size={18} /> Save Changes
-                  </button>
-                </div>
-              </div>
-              <div className="space-y-6">
-                {localRdMaturity.map((d: any, idx: number) => (
-                  <div key={d.id} className="p-6 bg-slate-50 rounded-2xl border border-gray-100 relative group">
-                    <button 
-                      onClick={() => {
-                        if (window.confirm('Are you sure you want to delete this maturity row?')) {
-                          const newD = localRdMaturity.filter((_: any, i: number) => i !== idx);
-                          setLocalRdMaturity(newD);
-                        }
-                      }}
-                      className="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-50 rounded-lg"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-gray-400">Monthly Deposit</label>
-                        <input 
-                          value={d.amount}
-                          onChange={(e) => {
-                            const newD = [...localRdMaturity];
-                            newD[idx].amount = e.target.value;
-                            setLocalRdMaturity(newD);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-200"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-bold text-gray-400">1 Year Maturity</label>
-                        <input 
-                          value={d.oneYear}
-                          onChange={(e) => {
-                            const newD = [...localRdMaturity];
-                            newD[idx].oneYear = e.target.value;
-                            setLocalRdMaturity(newD);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-200"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-bold text-gray-400">2 Years Maturity</label>
-                        <input 
-                          value={d.twoYears}
-                          onChange={(e) => {
-                            const newD = [...localRdMaturity];
-                            newD[idx].twoYears = e.target.value;
-                            setLocalRdMaturity(newD);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-200"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-bold text-gray-400">3 Years Maturity</label>
-                        <input 
-                          value={d.threeYears}
-                          onChange={(e) => {
-                            const newD = [...localRdMaturity];
-                            newD[idx].threeYears = e.target.value;
-                            setLocalRdMaturity(newD);
                           }}
                           className="w-full px-3 py-2 rounded-lg border border-gray-200"
                         />
