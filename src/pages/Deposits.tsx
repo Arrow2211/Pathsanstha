@@ -16,7 +16,7 @@ const Deposits = () => {
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`section-title text-white mb-4 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}
+            className="section-title text-white mb-4"
           >
             {t('nav.deposits')}
           </motion.h1>
@@ -39,7 +39,7 @@ const Deposits = () => {
                 <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#C5A059]">
                   <Landmark size={28} />
                 </div>
-                <h2 className={`text-xl md:text-2xl font-bold uppercase tracking-wide leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
+                <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest">
                   {language === 'marathi' ? 'मुदत ठेव व्याजदर (सर्वसाधारण)' : 'Fixed Deposit Rates (General)'}
                 </h2>
               </div>
@@ -96,7 +96,7 @@ const Deposits = () => {
             <div className="lg:col-span-1 bg-[#003366] text-white p-10 md:p-12 rounded-lg flex flex-col justify-center border-b-8 border-[#C5A059] shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-500"></div>
               <Clock size={56} className="mb-8 text-[#C5A059] relative z-10" strokeWidth={1} />
-              <h2 className={`text-2xl md:text-3xl font-bold mb-6 uppercase tracking-wide leading-relaxed relative z-10 ${language === 'marathi' ? 'font-marathi' : ''}`}>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 uppercase tracking-widest relative z-10">
                 {language === 'marathi' ? 'पुनरावृत्ती ठेव (RD)' : 'Recurring Deposit (RD)'}
               </h2>
               <p className="text-blue-100 opacity-90 leading-relaxed mb-10 text-lg relative z-10">
@@ -111,7 +111,7 @@ const Deposits = () => {
             </div>
             <div className="lg:col-span-2 bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden">
               <div className="bg-slate-50 p-6 md:p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h3 className={`font-bold text-[#003366] uppercase tracking-wide text-sm leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>RD Interest Structure</h3>
+                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">RD Interest Structure</h3>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-white px-3 py-1 rounded border border-slate-200">Monthly Compounding</span>
               </div>
               <div className="hidden sm:block overflow-x-auto">
@@ -174,7 +174,7 @@ const Deposits = () => {
                 <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center text-[#C5A059] mb-8 border border-slate-100 group-hover:bg-[#003366] group-hover:text-white transition-colors duration-300">
                   <f.icon size={36} strokeWidth={1} />
                 </div>
-                <h3 className={`font-bold text-[#003366] text-xl mb-4 uppercase tracking-normal leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>{f.title}</h3>
+                <h3 className="font-bold text-[#003366] text-xl mb-4 uppercase tracking-tight">{f.title}</h3>
                 <p className="text-slate-500 leading-relaxed text-sm">{f.desc}</p>
               </motion.div>
             ))}

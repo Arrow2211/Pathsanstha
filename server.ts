@@ -236,46 +236,36 @@ const authenticate = (req: any, res: any, next: any) => {
 
 // Helper to read local JSON data
 const readLocalJson = async (filename: string) => {
-  const rootDir = process.cwd();
   const possiblePaths = [
-    path.join(rootDir, "data", filename),
-    path.join(rootDir, "api", "data", filename),
+    path.join(process.cwd(), "data", filename),
+    path.join(process.cwd(), "api", "..", "data", filename),
     path.join(__dirname, "data", filename),
     path.join(__dirname, "..", "data", filename),
-    path.resolve(rootDir, "data", filename),
-    // Vercel specific paths
-    path.join("/var/task", "data", filename),
-    path.join("/var/task", "api", "data", filename)
+    path.resolve(process.cwd(), "data", filename)
   ];
 
   if (process.env.LAMBDA_TASK_ROOT) {
     possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "data", filename));
-    possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "api", "data", filename));
   }
 
   for (const filePath of possiblePaths) {
     try {
-      await fs.access(filePath);
       const data = await fs.readFile(filePath, "utf-8");
       const json = JSON.parse(data);
       console.log(`Successfully read local JSON ${filename} from: ${filePath}`);
       return json;
     } catch (error: any) {
-      // Only log if it's not a "file not found" error to reduce noise, 
-      // or log everything if we are debugging.
-      if (error.code !== 'ENOENT') {
-        console.log(`Error reading ${filename} from ${filePath}: ${error.message}`);
-      }
+      console.log(`Failed to read ${filename} from ${filePath}: ${error.message}`);
     }
   }
   
   console.error(`Failed to read local JSON ${filename} from all possible paths.`);
-  console.log("Debug Info for Path Resolution:", {
-    cwd: rootDir,
-    dirname: __dirname,
-    lambdaRoot: process.env.LAMBDA_TASK_ROOT,
-    filename
-  });
+  console.log("Current Directory (process.cwd()):", process.cwd());
+  console.log("Directory Name (__dirname):", __dirname);
+  try {
+    const rootFiles = await fs.readdir(process.cwd());
+    console.log("Files in process.cwd():", rootFiles.join(", "));
+  } catch (e) {}
   
   return null;
 };
@@ -671,11 +661,6 @@ app.get("/api/recurring-deposits", async (req, res) => {
     const localData = await readLocalJson("recurring_deposits.json");
     res.json(localData || []);
   }
-});
-
-// Alias for recurring-deposits if needed by some components
-app.get("/api/rd-maturity", async (req, res) => {
-  res.redirect("/api/recurring-deposits");
 });
 
 app.post("/api/recurring-deposits", authenticate, async (req, res) => {
