@@ -41,10 +41,20 @@ const Home = () => {
                   </span>
                 </div>
                 
-                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-[0.95] tracking-tight ${language === 'marathi' ? 'font-marathi' : ''}`}>
-                  <span className="block">{t('hero.title').split(' ').slice(0, -1).join(' ')}</span>
-                  <span className="text-gradient">{t('hero.title').split(' ').slice(-1)}</span>
-                </h1>
+                <h1
+  className={`
+    text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl
+    font-black text-primary mb-6 md:mb-10
+    leading-[1.1] md:leading-[0.95]
+    tracking-tight
+    break-words
+    ${language === 'marathi' ? 'font-marathi' : ''}
+  `}
+>
+  <span className="block">
+    {t('hero.title')}
+  </span>
+</h1>
                 
                 <p className="text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
                   {t('hero.tagline')}
