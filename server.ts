@@ -93,6 +93,16 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPA
  *   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
  * );
  * 
+ * -- 7. Create rd_maturity table
+ * CREATE TABLE IF NOT EXISTS rd_maturity (
+ *   id TEXT PRIMARY KEY,
+ *   amount TEXT,
+ *   one_year TEXT,
+ *   two_years TEXT,
+ *   three_years TEXT,
+ *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+ * );
+ * 
  * -- Enable RLS (Optional but recommended)
  * -- ALTER TABLE app_content ENABLE ROW LEVEL SECURITY;
  * -- ALTER TABLE stats ENABLE ROW LEVEL SECURITY;
@@ -289,6 +299,10 @@ const getTableData = async (tableName: string) => {
     const { data, error } = await query;
     
     if (error) {
+      if (error.message.includes("Could not find the table")) {
+        console.log(`Supabase table ${tableName} does not exist yet. Falling back to local data.`);
+        return null;
+      }
       console.error(`Supabase fetch error for ${tableName}:`, error.message, error.details, error.hint);
       return null;
     }
@@ -485,6 +499,26 @@ app.post("/api/migrate", authenticate, async (req, res) => {
     }
     results.content = sections.length;
 
+    // 6. Migrate RD Maturity
+    console.log("Migrating RD maturity...");
+    const rdMaturityData = await readLocalJson("rd_maturity.json");
+    if (rdMaturityData) {
+      for (const m of rdMaturityData) {
+        const { error } = await client.from("rd_maturity").upsert({
+          id: String(m.id),
+          amount: String(m.amount),
+          one_year: String(m.oneYear),
+          two_years: String(m.twoYears),
+          three_years: String(m.threeYears)
+        });
+        if (error) {
+          console.error(`RD maturity migration failed for ID ${m.id}:`, error.message);
+          // Don't throw here, just log, as this might be a new table
+        }
+      }
+      results.rd_maturity = rdMaturityData.length;
+    }
+
     console.log("Migration completed successfully:", results);
     res.json({ success: true, message: "Migration completed successfully", results });
   } catch (error: any) {
@@ -663,6 +697,27 @@ app.get("/api/recurring-deposits", async (req, res) => {
   }
 });
 
+app.get("/api/rd-maturity", async (req, res) => {
+  try {
+    const data = await getTableData("rd_maturity");
+    if (!data || data.length === 0) {
+      const localData = await readLocalJson("rd_maturity.json");
+      return res.json(localData || []);
+    }
+    const formatted = data.map((d: any) => ({
+      id: d.id,
+      amount: d.amount,
+      oneYear: d.one_year,
+      twoYears: d.two_years,
+      threeYears: d.three_years
+    }));
+    res.json(formatted);
+  } catch (error: any) {
+    const localData = await readLocalJson("rd_maturity.json");
+    res.json(localData || []);
+  }
+});
+
 app.post("/api/recurring-deposits", authenticate, async (req, res) => {
   try {
     const client = getSupabase();
@@ -696,6 +751,42 @@ app.post("/api/recurring-deposits", authenticate, async (req, res) => {
     res.json({ success: true });
   } catch (error: any) {
     console.error("Recurring deposits save failed:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/rd-maturity", authenticate, async (req, res) => {
+  try {
+    const client = getSupabase();
+    const data = req.body;
+
+    // Handle deletions
+    const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+    
+    if (incomingIds.length > 0) {
+      const { error: deleteError } = await client.from("rd_maturity").delete().not("id", "in", incomingIds);
+      if (deleteError) console.error("Error deleting removed rd maturity records:", deleteError.message);
+    } else {
+      const { error: deleteError } = await client.from("rd_maturity").delete().neq("id", "_none_");
+      if (deleteError) console.error("Error clearing rd maturity table:", deleteError.message);
+    }
+
+    // Upsert items
+    const upsertData = data.map((d: any) => ({
+      id: String(d.id || Math.random().toString(36).substr(2, 9)),
+      amount: String(d.amount),
+      one_year: String(d.oneYear),
+      two_years: String(d.twoYears),
+      three_years: String(d.threeYears),
+      updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await client.from("rd_maturity").upsert(upsertData);
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("RD maturity save failed:", error);
     res.status(500).json({ error: error.message });
   }
 });
