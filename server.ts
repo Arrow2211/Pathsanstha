@@ -26,8 +26,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 // Supabase Configuration
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "";
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || "";
 
 /**
  * FINAL AND CORRECT SQL SCRIPT FOR SUPABASE (Run this in the SQL Editor):
@@ -137,14 +137,42 @@ app.get("/api/health", async (req, res) => {
   const dataExists = await fs.access(path.join(process.cwd(), "data")).then(() => true).catch(() => false);
   const contentExists = await fs.access(path.join(process.cwd(), "data", "content.json")).then(() => true).catch(() => false);
   
+  let supabaseStatus = "Not Configured";
+  let supabaseError = null;
+  
+  if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const client = getSupabase();
+      if (client) {
+        const { error } = await client.from("app_content").select("count", { count: 'exact', head: true });
+        if (error) {
+          supabaseStatus = "Error: " + error.message;
+          supabaseError = error;
+        } else {
+          supabaseStatus = "Connected";
+        }
+      } else {
+        supabaseStatus = "Client Initialization Failed";
+      }
+    } catch (e: any) {
+      supabaseStatus = "Exception: " + e.message;
+      supabaseError = e;
+    }
+  }
+
   res.json({ 
     status: "ok", 
-    supabase: !!SUPABASE_URL,
+    supabase: supabaseStatus,
+    supabaseConfig: {
+      url: SUPABASE_URL ? "Set" : "Not Set",
+      key: SUPABASE_SERVICE_ROLE_KEY ? "Set" : "Not Set"
+    },
     env: process.env.NODE_ENV,
     vercel: !!process.env.VERCEL,
     dataDir: dataExists,
     contentJson: contentExists,
-    cwd: process.cwd()
+    cwd: process.cwd(),
+    error: supabaseError
   });
 });
 
@@ -257,9 +285,16 @@ const getTableData = async (tableName: string) => {
     const { data, error } = await query;
     
     if (error) {
-      console.warn(`Supabase fetch error for ${tableName}:`, error.message);
+      console.error(`Supabase fetch error for ${tableName}:`, error.message, error.details, error.hint);
       return null;
     }
+    
+    if (!data || data.length === 0) {
+      console.log(`Supabase table ${tableName} is empty.`);
+    } else {
+      console.log(`Successfully fetched ${data.length} rows from Supabase table ${tableName}.`);
+    }
+    
     return data;
   } catch (e) {
     console.error(`Error fetching ${tableName} from Supabase:`, e);
