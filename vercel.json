@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/**/*.ts": {
-      "includeFiles": "data/**"
+      "includeFiles": ["data/**", "server.ts"]
     }
   },
   "rewrites": [
