@@ -44,7 +44,7 @@ const Deposits = () => {
                 </h2>
               </div>
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
-                Effective from April 2024
+                Effective from April 2026
               </span>
             </div>
             <div className="hidden md:block overflow-x-auto">

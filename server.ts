@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const { sign, verify } = jwt.default || jwt;
+const { sign, verify } = (jwt as any).default || jwt;
 
 console.log("Server script starting...");
 console.log("Debug Paths:", {

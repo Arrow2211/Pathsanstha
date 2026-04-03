@@ -51,22 +51,28 @@ const Home = () => {
                 </p>
                 
                 <div className="flex flex-wrap justify-center lg:justify-start gap-6">
-                  <Link 
-                    to="/deposits" 
-                    className="btn-primary group"
+                  <button 
+                    onClick={() => {
+                      const element = document.getElementById('deposits');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="btn-primary group cursor-pointer"
                   >
                     <span className="relative z-10 flex items-center gap-3">
                       {t('hero.savingsSchemes')}
                       <ArrowRight size={20} className="group-hover:translate-x-1.5 transition-transform" />
                     </span>
-                  </Link>
+                  </button>
                   
-                  <Link 
-                    to="/loans" 
-                    className="btn-accent"
+                  <button 
+                    onClick={() => {
+                      const element = document.getElementById('loans');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="btn-accent cursor-pointer"
                   >
                     {t('hero.loanSchemes')}
-                  </Link>
+                  </button>
                 </div>
                 
                 {/* Trust Indicators */}
