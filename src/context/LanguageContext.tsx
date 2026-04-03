@@ -11,7 +11,6 @@ interface LanguageContextType {
   stats: any;
   deposits: any;
   recurringDeposits: any;
-  rdMaturity: any;
   loans: any;
   loading: boolean;
   refreshData: () => Promise<void>;
@@ -30,7 +29,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
   const [deposits, setDeposits] = useState<any>([]);
   const [recurringDeposits, setRecurringDeposits] = useState<any>([]);
-  const [rdMaturity, setRdMaturity] = useState<any>([]);
   const [loans, setLoans] = useState<any>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,12 +53,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       };
 
-      const [contentRes, statsRes, depositsRes, recurringRes, rdMaturityRes, loansRes] = await Promise.all([
+      const [contentRes, statsRes, depositsRes, recurringRes, loansRes] = await Promise.all([
         fetchJson('/api/content'),
         fetchJson('/api/stats'),
         fetchJson('/api/deposits'),
         fetchJson('/api/recurring-deposits'),
-        fetchJson('/api/rd-maturity'),
         fetchJson('/api/loans'),
       ]);
 
@@ -85,7 +82,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       if (Array.isArray(depositsRes)) setDeposits(depositsRes);
       if (Array.isArray(recurringRes)) setRecurringDeposits(recurringRes);
-      if (Array.isArray(rdMaturityRes)) setRdMaturity(rdMaturityRes);
       if (Array.isArray(loansRes)) setLoans(loansRes);
     } catch (error) {
       console.error('Error in fetchData:', error);
@@ -122,7 +118,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       stats, 
       deposits, 
       recurringDeposits,
-      rdMaturity,
       loans, 
       loading,
       refreshData: fetchData

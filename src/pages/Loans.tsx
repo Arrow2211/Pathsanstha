@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
-import { Wallet, Home, Briefcase, Zap, Coins, UserCheck, ShieldCheck, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Wallet, Home, Briefcase, Zap, Coins, UserCheck, ShieldCheck, FileText, CheckCircle2 } from 'lucide-react';
 import EMICalculator from '../components/EMICalculator';
 
 const Loans = () => {
@@ -18,82 +18,67 @@ const Loans = () => {
   };
 
   return (
-    <div className="bg-[#FDFDFD] overflow-x-hidden">
-      {/* Page Header - Modern & Premium */}
-      <div className="bg-primary-dark py-32 md:py-48 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-pattern-grid opacity-10 pointer-events-none"></div>
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/[0.05] -skew-x-12 translate-x-1/4"></div>
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-accent/[0.05] rounded-full blur-[120px]"></div>
-        
+    <div className="bg-white">
+      {/* Page Header - Traditional Style */}
+      <div className="bg-[#003366] py-24 md:py-32 text-white relative overflow-hidden">
         <div className="section-container relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tighter"
           >
-            <div className="inline-block text-[10px] font-black uppercase tracking-[0.4em] text-accent mb-8">Financial Empowerment</div>
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black mb-10 tracking-tighter leading-[0.85]">
-              {t('nav.loans')}
-            </h1>
-            <div className="w-24 h-2 bg-accent rounded-full mb-12"></div>
-            <p className="text-xl md:text-2xl text-blue-100 max-w-3xl opacity-80 leading-relaxed font-medium">
-              {language === 'marathi' 
-                ? 'तुमच्या स्वप्नांना द्या पंख. सुलभ हप्ते आणि कमी व्याजदरात कर्ज उपलब्ध. आम्ही देतो तुमच्या प्रगतीला वेग.' 
-                : 'Empower your dreams with our flexible loan solutions. Competitive rates, hassle-free processing, and transparent terms.'}
-            </p>
-          </motion.div>
+            {t('nav.loans')}
+          </motion.h1>
+          <div className="w-16 md:w-24 h-1.5 md:h-2 bg-[#C5A059] rounded-full"></div>
+          <p className="mt-8 text-blue-100 max-w-2xl opacity-90 text-base md:text-lg leading-relaxed">
+            {language === 'marathi' 
+              ? 'तुमच्या स्वप्नांना द्या पंख. सुलभ हप्ते आणि कमी व्याजदरात कर्ज उपलब्ध.' 
+              : 'Empower your dreams with our flexible loan solutions. Competitive rates and hassle-free processing.'}
+          </p>
         </div>
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-[-20deg] translate-x-1/2"></div>
       </div>
 
-      <div className="section-padding relative">
-        <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-primary-dark/5 to-transparent pointer-events-none"></div>
-        <div id="loan-schemes" className="section-container relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-32">
-            {Array.isArray(loans) && loans.map((loan: any, idx: number) => {
+      <div className="section-padding">
+        <div className="section-container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 mb-16 md:mb-24">
+            {Array.isArray(loans) && loans.map((loan: any) => {
               const Icon = getIcon(loan.name.english);
               return (
                 <motion.div 
                   key={loan.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="card-premium flex flex-col group"
+                  whileHover={{ y: -8 }}
+                  className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-300"
                 >
-                  <div className="p-12 flex-grow">
-                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center text-accent mb-10 border border-slate-100 group-hover:bg-primary-dark group-hover:text-white transition-all duration-700 shadow-inner">
-                      <Icon size={32} strokeWidth={1.5} />
+                  <div className="p-6 md:p-10 flex-grow">
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-xl flex items-center justify-center text-[#C5A059] mb-6 md:mb-8 border border-slate-100 group-hover:bg-[#003366] group-hover:text-white transition-colors duration-300">
+                      <Icon size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
                     </div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-4">Loan Scheme</div>
-                    <h3 className="text-2xl font-black text-primary-dark mb-6 uppercase tracking-tight leading-none">{loan.name[language]}</h3>
-                    <p className="text-slate-500 text-base mb-10 leading-relaxed font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+                    <h3 className="text-lg md:text-xl font-bold text-[#003366] mb-3 md:mb-4 uppercase tracking-tight">{loan.name[language]}</h3>
+                    <p className="text-slate-500 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed opacity-80">
                       {loan.description[language]}
                     </p>
-                    <div className="pt-10 border-t border-slate-50">
+                    <div className="pt-6 md:pt-8 border-t border-slate-100">
                       <div className="flex items-end justify-between">
                         <div>
-                          <p className="text-[10px] text-slate-400 uppercase tracking-[0.3em] font-black mb-2">
+                          <p className="text-[9px] md:text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">
                             {language === 'marathi' ? 'व्याजदर' : 'Interest Rate'}
                           </p>
-                          <p className="text-4xl font-black text-primary-dark tracking-tighter group-hover:text-accent transition-colors">{loan.rate}</p>
+                          <p className="text-2xl md:text-3xl font-black text-[#003366]">{loan.rate}</p>
                         </div>
-                        <div className="flex items-center gap-3 text-accent">
-                          <ShieldCheck size={20} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">{language === 'marathi' ? 'सुलभ प्रक्रिया' : 'Easy Process'}</span>
+                        <div className="flex items-center gap-2 text-[#C5A059]">
+                          <ShieldCheck size={14} className="md:w-4 md:h-4" />
+                          <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{language === 'marathi' ? 'सुलभ प्रक्रिया' : 'Easy Process'}</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-slate-50/50 border-t border-slate-100 p-8 text-center group-hover:bg-slate-50 transition-all duration-500">
+                  <div className="bg-slate-50 border-t border-slate-200 p-5 text-center group-hover:bg-slate-100 transition-colors">
                     <button 
-                      onClick={() => {
-                        const element = document.getElementById('contact');
-                        if (element) element.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="text-primary-dark font-black text-[10px] uppercase tracking-[0.4em] hover:text-accent transition-colors flex items-center justify-center mx-auto gap-3"
+                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="text-[#003366] font-bold text-xs uppercase tracking-widest hover:text-[#C5A059] transition-colors"
                     >
                       {language === 'marathi' ? 'अधिक माहिती' : 'More Details'}
-                      <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                     </button>
                   </div>
                 </motion.div>
@@ -101,38 +86,23 @@ const Loans = () => {
             })}
           </div>
 
-          <div className="mb-32">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <EMICalculator />
-            </motion.div>
+          <div className="mb-24">
+            <EMICalculator />
           </div>
 
-          {/* Loan Requirements Info - Modern Split Layout */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-primary-dark text-white rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,43,91,0.3)] relative"
-          >
-            <div className="absolute inset-0 bg-pattern-dots opacity-5 pointer-events-none"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 relative z-10">
-              <div className="p-12 md:p-24 border-b lg:border-b-0 lg:border-r border-white/10">
-                <div className="flex items-center gap-6 mb-16">
-                  <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-accent shadow-inner">
-                    <FileText size={32} />
+          {/* Loan Requirements Info - Corporate Style */}
+          <div className="bg-slate-900 text-white rounded-2xl overflow-hidden shadow-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div className="p-10 md:p-16 border-b lg:border-b-0 lg:border-r border-white/10">
+                <div className="flex items-center gap-4 mb-10">
+                  <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center text-[#C5A059]">
+                    <FileText size={28} />
                   </div>
-                  <div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-1">Documentation</div>
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tighter leading-none">
-                      {language === 'marathi' ? 'आवश्यक कागदपत्रे' : 'Required Documents'}
-                    </h2>
-                  </div>
+                  <h2 className="text-2xl font-bold uppercase tracking-widest">
+                    {language === 'marathi' ? 'आवश्यक कागदपत्रे' : 'Required Documents'}
+                  </h2>
                 </div>
-                <ul className="space-y-8">
+                <ul className="space-y-6">
                   {[
                     { m: 'आधार कार्ड आणि पॅन कार्ड', e: 'Aadhar Card & PAN Card' },
                     { m: '७/१२ उतारा किंवा मालमत्ता पत्रक', e: '7/12 Extract or Property Documents' },
@@ -140,49 +110,39 @@ const Loans = () => {
                     { m: 'पासपोर्ट आकाराचे फोटो', e: 'Passport size photographs' },
                     { m: 'जामीनदारांची कागदपत्रे', e: 'Guarantor documents' },
                   ].map((doc, i) => (
-                    <motion.li 
-                      key={i} 
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      viewport={{ once: true }}
-                      className="flex items-center gap-6 group"
-                    >
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all duration-500">
-                        <CheckCircle2 size={18} />
+                    <li key={i} className="flex items-start gap-4 group">
+                      <div className="mt-1">
+                        <CheckCircle2 size={20} className="text-[#C5A059]" />
                       </div>
-                      <span className="text-blue-100 group-hover:text-white transition-colors text-xl font-medium tracking-tight">
+                      <span className="text-slate-300 group-hover:text-white transition-colors text-lg">
                         {language === 'marathi' ? doc.m : doc.e}
                       </span>
-                    </motion.li>
+                    </li>
                   ))}
                 </ul>
               </div>
-              <div className="p-12 md:p-24 bg-primary-dark/50 flex flex-col justify-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px]"></div>
-                <div className="bg-white/5 p-12 md:p-16 rounded-[3rem] border border-white/10 relative z-10 backdrop-blur-2xl shadow-inner">
-                  <div className="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center text-accent mb-10">
-                    <Zap size={32} />
-                  </div>
-                  <h3 className="text-2xl font-black text-accent mb-8 uppercase tracking-[0.2em] leading-none">
+              <div className="p-10 md:p-16 bg-[#003366] flex flex-col justify-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div className="bg-white/5 p-8 md:p-10 rounded-xl border border-white/10 relative z-10 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold text-[#C5A059] mb-6 uppercase tracking-widest">
                     {language === 'marathi' ? 'महत्वाची सूचना' : 'Important Note'}
                   </h3>
-                  <p className="text-blue-100 leading-relaxed opacity-80 text-xl font-medium mb-12">
+                  <p className="text-blue-100 leading-relaxed opacity-90 text-lg">
                     {language === 'marathi' 
                       ? 'कर्ज मंजुरी संस्थेच्या नियमावलीनुसार आणि कागदपत्रांच्या पडताळणीनंतरच केली जाईल. अधिक माहितीसाठी कृपया शाखेशी संपर्क साधा.' 
                       : 'Loan approval will be subject to society rules and document verification. Please contact the branch for more details.'}
                   </p>
-                  <div className="pt-12 border-t border-white/10 flex items-center justify-between">
+                  <div className="mt-12 pt-10 border-t border-white/10 flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-2">Processing Time</p>
-                      <p className="text-4xl font-black tracking-tighter">2-3 <span className="text-xs text-white/40 uppercase tracking-widest">Working Days*</span></p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] mb-1">Processing Time</p>
+                      <p className="text-2xl font-bold">2-3 Working Days*</p>
                     </div>
-                    <div className="text-[10px] text-white/20 italic font-black uppercase tracking-widest">*Conditions apply</div>
+                    <div className="text-[10px] text-white/40 italic">*Conditions apply</div>
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
