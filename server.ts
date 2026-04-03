@@ -82,16 +82,7 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPA
  *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
  * );
  * 
- * -- 6. Create rd_maturity
- * CREATE TABLE IF NOT EXISTS rd_maturity (
- *   amount INTEGER PRIMARY KEY,
- *   year1 INTEGER,
- *   year2 INTEGER,
- *   year3 INTEGER,
- *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
- * );
- * 
- * -- 7. Create enquiries table
+ * -- 6. Create enquiries table
  * CREATE TABLE IF NOT EXISTS enquiries (
  *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
  *   name TEXT NOT NULL,
@@ -245,36 +236,46 @@ const authenticate = (req: any, res: any, next: any) => {
 
 // Helper to read local JSON data
 const readLocalJson = async (filename: string) => {
+  const rootDir = process.cwd();
   const possiblePaths = [
-    path.join(process.cwd(), "data", filename),
-    path.join(process.cwd(), "api", "..", "data", filename),
+    path.join(rootDir, "data", filename),
+    path.join(rootDir, "api", "data", filename),
     path.join(__dirname, "data", filename),
     path.join(__dirname, "..", "data", filename),
-    path.resolve(process.cwd(), "data", filename)
+    path.resolve(rootDir, "data", filename),
+    // Vercel specific paths
+    path.join("/var/task", "data", filename),
+    path.join("/var/task", "api", "data", filename)
   ];
 
   if (process.env.LAMBDA_TASK_ROOT) {
     possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "data", filename));
+    possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "api", "data", filename));
   }
 
   for (const filePath of possiblePaths) {
     try {
+      await fs.access(filePath);
       const data = await fs.readFile(filePath, "utf-8");
       const json = JSON.parse(data);
       console.log(`Successfully read local JSON ${filename} from: ${filePath}`);
       return json;
     } catch (error: any) {
-      console.log(`Failed to read ${filename} from ${filePath}: ${error.message}`);
+      // Only log if it's not a "file not found" error to reduce noise, 
+      // or log everything if we are debugging.
+      if (error.code !== 'ENOENT') {
+        console.log(`Error reading ${filename} from ${filePath}: ${error.message}`);
+      }
     }
   }
   
   console.error(`Failed to read local JSON ${filename} from all possible paths.`);
-  console.log("Current Directory (process.cwd()):", process.cwd());
-  console.log("Directory Name (__dirname):", __dirname);
-  try {
-    const rootFiles = await fs.readdir(process.cwd());
-    console.log("Files in process.cwd():", rootFiles.join(", "));
-  } catch (e) {}
+  console.log("Debug Info for Path Resolution:", {
+    cwd: rootDir,
+    dirname: __dirname,
+    lambdaRoot: process.env.LAMBDA_TASK_ROOT,
+    filename
+  });
   
   return null;
 };
@@ -291,8 +292,6 @@ const getTableData = async (tableName: string) => {
     
     if (tableName === "app_content") {
       query = query.order("section_key", { ascending: true });
-    } else if (tableName === "rd_maturity") {
-      query = query.order("amount", { ascending: true });
     } else {
       query = query.order("id", { ascending: true });
     }
@@ -460,24 +459,6 @@ app.post("/api/migrate", authenticate, async (req, res) => {
       }
     }
     results.recurring_deposits = rdData.length;
-    
-    // 3.5 Migrate RD Maturity Table
-    console.log("Migrating RD maturity table...");
-    const rdMaturityData = await readLocalJson("rd_maturity.json");
-    if (rdMaturityData) {
-      for (const row of rdMaturityData) {
-        const { error } = await client.from("rd_maturity").upsert({
-          amount: row.amount,
-          year1: row.year1,
-          year2: row.year2,
-          year3: row.year3
-        });
-        if (error) {
-          console.error(`RD maturity table migration failed for amount ${row.amount}:`, error.message);
-        }
-      }
-      results.rd_maturity = rdMaturityData.length;
-    }
 
     // 4. Migrate Stats
     console.log("Migrating stats...");
@@ -692,46 +673,9 @@ app.get("/api/recurring-deposits", async (req, res) => {
   }
 });
 
+// Alias for recurring-deposits if needed by some components
 app.get("/api/rd-maturity", async (req, res) => {
-  try {
-    const data = await getTableData("rd_maturity");
-    if (!data || data.length === 0) {
-      const localData = await readLocalJson("rd_maturity.json");
-      return res.json(localData || []);
-    }
-    res.json(data);
-  } catch (error: any) {
-    const localData = await readLocalJson("rd_maturity.json");
-    res.json(localData || []);
-  }
-});
-
-app.post("/api/rd-maturity", authenticate, async (req, res) => {
-  try {
-    const client = getSupabase();
-    const data = req.body;
-    
-    // Delete all existing rows first to handle removals
-    const { error: deleteError } = await client.from("rd_maturity").delete().neq("amount", -1);
-    if (deleteError) console.error("Error clearing rd_maturity:", deleteError.message);
-
-    for (const row of data) {
-      const { error } = await client.from("rd_maturity").upsert({
-        amount: row.amount,
-        year1: row.year1,
-        year2: row.year2,
-        year3: row.year3
-      });
-      if (error) {
-        console.error(`Error saving RD maturity row ${row.amount}:`, error.message);
-        return res.status(500).json({ error: `Failed to save RD maturity row ${row.amount}: ${error.message}` });
-      }
-    }
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error("RD maturity table save failed:", error);
-    res.status(500).json({ error: error.message });
-  }
+  res.redirect("/api/recurring-deposits");
 });
 
 app.post("/api/recurring-deposits", authenticate, async (req, res) => {

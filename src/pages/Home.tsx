@@ -41,11 +41,11 @@ const Home = () => {
                   </span>
                 </div>
                 
-                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-[1.1] tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
+                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-relaxed tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
                   {t('hero.title')}
                 </h1>
                 
-                <p className="text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                <p className={`text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium ${language === 'marathi' ? 'font-marathi' : ''}`}>
                   {t('hero.tagline')}
                 </p>
                 
@@ -176,7 +176,7 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-surface to-transparent"></div>
         <div className="section-container relative z-10">
           <div className="text-center mb-16 md:mb-24">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-4 md:mb-6">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-4 md:mb-6 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
               {t('services.title')}
             </h2>
             <div className="w-16 md:w-24 h-1.5 md:h-2 bg-accent mx-auto rounded-full"></div>
@@ -210,7 +210,7 @@ const Home = () => {
         <div className="section-container relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-16 md:gap-24">
             <div className="flex-1 w-full order-2 lg:order-1">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary mb-10 md:mb-16 text-center lg:text-left leading-snug tracking-normal">
+              <h2 className={`text-3xl sm:text-4xl md:text-5xl font-black text-primary mb-10 md:mb-16 text-center lg:text-left leading-relaxed tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
                 {t('trust.title')}
               </h2>
               <div className="space-y-8 md:space-y-12">
@@ -259,7 +259,7 @@ const Home = () => {
       <section className="section-padding bg-white">
         <div className="section-container">
           <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-6">
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-6 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
               {language === 'marathi' ? 'आमच्या सभासदांचे मनोगत' : 'Member Testimonials'}
             </h2>
             <div className="w-24 h-2 bg-accent mx-auto rounded-full"></div>
