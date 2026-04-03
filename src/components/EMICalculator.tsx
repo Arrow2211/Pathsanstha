@@ -45,9 +45,17 @@ const EMICalculator: React.FC = () => {
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="space-y-8">
           <div>
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-between mb-4 items-center">
               <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.loanAmount}</label>
-              <span className="text-blue-900 font-bold">{labels.currency} {loanAmount.toLocaleString()}</span>
+              <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                <span className="text-blue-900 font-bold mr-1">{labels.currency}</span>
+                <input 
+                  type="number" 
+                  value={loanAmount}
+                  onChange={(e) => setLoanAmount(Number(e.target.value))}
+                  className="bg-transparent text-blue-900 font-bold w-24 text-right focus:outline-none"
+                />
+              </div>
             </div>
             <input 
               type="range" 
@@ -65,9 +73,18 @@ const EMICalculator: React.FC = () => {
           </div>
 
           <div>
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-between mb-4 items-center">
               <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.interestRate}</label>
-              <span className="text-blue-900 font-bold">{interestRate}%</span>
+              <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                <input 
+                  type="number" 
+                  step="0.1"
+                  value={interestRate}
+                  onChange={(e) => setInterestRate(Number(e.target.value))}
+                  className="bg-transparent text-blue-900 font-bold w-12 text-right focus:outline-none"
+                />
+                <span className="text-blue-900 font-bold ml-1">%</span>
+              </div>
             </div>
             <input 
               type="range" 
@@ -85,9 +102,17 @@ const EMICalculator: React.FC = () => {
           </div>
 
           <div>
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-between mb-4 items-center">
               <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.tenure}</label>
-              <span className="text-blue-900 font-bold">{tenure} Yrs</span>
+              <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                <input 
+                  type="number" 
+                  value={tenure}
+                  onChange={(e) => setTenure(Number(e.target.value))}
+                  className="bg-transparent text-blue-900 font-bold w-12 text-right focus:outline-none"
+                />
+                <span className="text-blue-900 font-bold ml-1 text-[10px] uppercase">Yrs</span>
+              </div>
             </div>
             <input 
               type="range" 

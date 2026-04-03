@@ -25,7 +25,7 @@ const Loans = () => {
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tighter"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-normal leading-tight"
           >
             {t('nav.loans')}
           </motion.h1>
@@ -54,7 +54,7 @@ const Loans = () => {
                     <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-xl flex items-center justify-center text-[#C5A059] mb-6 md:mb-8 border border-slate-100 group-hover:bg-[#003366] group-hover:text-white transition-colors duration-300">
                       <Icon size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-[#003366] mb-3 md:mb-4 uppercase tracking-tight">{loan.name[language]}</h3>
+                    <h3 className="text-lg md:text-xl font-bold text-[#003366] mb-3 md:mb-4 uppercase tracking-normal leading-snug">{loan.name[language]}</h3>
                     <p className="text-slate-500 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed opacity-80">
                       {loan.description[language]}
                     </p>
@@ -98,7 +98,7 @@ const Loans = () => {
                   <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center text-[#C5A059]">
                     <FileText size={28} />
                   </div>
-                  <h2 className="text-2xl font-bold uppercase tracking-widest">
+                  <h2 className="text-2xl font-bold uppercase tracking-wide leading-snug">
                     {language === 'marathi' ? 'आवश्यक कागदपत्रे' : 'Required Documents'}
                   </h2>
                 </div>
@@ -124,7 +124,7 @@ const Loans = () => {
               <div className="p-10 md:p-16 bg-[#003366] flex flex-col justify-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div className="bg-white/5 p-8 md:p-10 rounded-xl border border-white/10 relative z-10 backdrop-blur-sm">
-                  <h3 className="text-xl font-bold text-[#C5A059] mb-6 uppercase tracking-widest">
+                  <h3 className="text-xl font-bold text-[#C5A059] mb-6 uppercase tracking-wide leading-snug">
                     {language === 'marathi' ? 'महत्वाची सूचना' : 'Important Note'}
                   </h3>
                   <p className="text-blue-100 leading-relaxed opacity-90 text-lg">

@@ -8,13 +8,14 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { content, stats, deposits, recurringDeposits, loans, loading, refreshData } = useLanguage();
+  const { content, stats, deposits, recurringDeposits, rdMaturity, loans, loading, refreshData } = useLanguage();
   const [activeTab, setActiveTab] = useState('stats');
   const [editLang, setEditLang] = useState<'marathi' | 'english'>('marathi');
   const [localStats, setLocalStats] = useState<any>(null);
   const [localContent, setLocalContent] = useState<any>(null);
   const [localDeposits, setLocalDeposits] = useState<any>(null);
   const [localRecurringDeposits, setLocalRecurringDeposits] = useState<any>(null);
+  const [localRdMaturity, setLocalRdMaturity] = useState<any>(null);
   const [localLoans, setLocalLoans] = useState<any>(null);
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [supabaseStatus, setSupabaseStatus] = useState<{ connected: boolean; message?: string; error?: string } | null>(null);
@@ -76,8 +77,9 @@ const AdminDashboard = () => {
     if (content) setLocalContent(JSON.parse(JSON.stringify(content)));
     if (deposits) setLocalDeposits([...deposits]);
     if (recurringDeposits) setLocalRecurringDeposits([...recurringDeposits]);
+    if (rdMaturity) setLocalRdMaturity([...rdMaturity]);
     if (loans) setLocalLoans([...loans]);
-  }, [stats, content, deposits, recurringDeposits, loans, navigate]);
+  }, [stats, content, deposits, recurringDeposits, rdMaturity, loans, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -283,7 +285,16 @@ CREATE TABLE IF NOT EXISTS recurring_deposits (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Create enquiries table
+-- 6. Create rd_maturity table
+CREATE TABLE IF NOT EXISTS rd_maturity (
+  amount INTEGER PRIMARY KEY,
+  year1 INTEGER,
+  year2 INTEGER,
+  year3 INTEGER,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Create enquiries table
 CREATE TABLE IF NOT EXISTS enquiries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -1017,7 +1028,7 @@ NOTIFY pgrst, 'reload schema';`;
                   </button>
                 </div>
               </div>
-              <div className="space-y-6">
+              <div className="space-y-6 mb-12">
                 {localRecurringDeposits.map((d: any, idx: number) => (
                   <div key={d.id} className="p-6 bg-slate-50 rounded-2xl border border-gray-100 relative group">
                     <button 
@@ -1071,6 +1082,103 @@ NOTIFY pgrst, 'reload schema';`;
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="border-t border-gray-100 pt-12">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-bold text-gray-900">RD Maturity Value Table</h3>
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => {
+                        setLocalRdMaturity([...localRdMaturity, { amount: 0, year1: 0, year2: 0, year3: 0 }]);
+                      }}
+                      className="bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-green-700"
+                    >
+                      <Plus size={18} /> Add Row
+                    </button>
+                    <button onClick={() => save('rd-maturity', localRdMaturity)} className="bg-blue-900 text-white px-6 py-2 rounded-xl flex items-center gap-2 hover:bg-blue-800">
+                      <Save size={18} /> Save Table
+                    </button>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-gray-200">
+                        <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Amount</th>
+                        <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">1 Year</th>
+                        <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">2 Years</th>
+                        <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">3 Years</th>
+                        <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {localRdMaturity?.map((row: any, idx: number) => (
+                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-4 py-3">
+                            <input 
+                              type="number"
+                              value={row.amount}
+                              onChange={(e) => {
+                                const newTable = [...localRdMaturity];
+                                newTable[idx].amount = parseInt(e.target.value) || 0;
+                                setLocalRdMaturity(newTable);
+                              }}
+                              className="w-full px-2 py-1 rounded border border-gray-200"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input 
+                              type="number"
+                              value={row.year1}
+                              onChange={(e) => {
+                                const newTable = [...localRdMaturity];
+                                newTable[idx].year1 = parseInt(e.target.value) || 0;
+                                setLocalRdMaturity(newTable);
+                              }}
+                              className="w-full px-2 py-1 rounded border border-gray-200"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input 
+                              type="number"
+                              value={row.year2}
+                              onChange={(e) => {
+                                const newTable = [...localRdMaturity];
+                                newTable[idx].year2 = parseInt(e.target.value) || 0;
+                                setLocalRdMaturity(newTable);
+                              }}
+                              className="w-full px-2 py-1 rounded border border-gray-200"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input 
+                              type="number"
+                              value={row.year3}
+                              onChange={(e) => {
+                                const newTable = [...localRdMaturity];
+                                newTable[idx].year3 = parseInt(e.target.value) || 0;
+                                setLocalRdMaturity(newTable);
+                              }}
+                              className="w-full px-2 py-1 rounded border border-gray-200"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <button 
+                              onClick={() => {
+                                const newTable = localRdMaturity.filter((_: any, i: number) => i !== idx);
+                                setLocalRdMaturity(newTable);
+                              }}
+                              className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

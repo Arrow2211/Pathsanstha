@@ -102,11 +102,11 @@ const Header = () => {
                     referrerPolicy="no-referrer"
                   />
                 )}
-                <div className="flex flex-col">
-                  <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-tight tracking-tight group-hover:text-[#C5A059] transition-colors">
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-snug tracking-normal text-[#C5A059] transition-colors">
                     {t('header.bankName')}
                   </span>
-                  <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-[0.15em] md:tracking-[0.2em] text-[#C5A059] opacity-90">
+                  <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold tracking-[0.1em] md:tracking-[0.15em] text-[#C5A059] opacity-100 leading-normal">
                     {t('header.tagline')}
                   </span>
                 </div>
@@ -120,7 +120,7 @@ const Header = () => {
                   key={item.path}
                   onClick={() => scrollToSection(item.path)}
                   className={`text-[11px] lg:text-xs font-bold uppercase tracking-widest hover:text-[#C5A059] transition-colors relative py-2 ${
-                    activeSection === item.path ? 'text-[#C5A059]' : ''
+                    activeSection === item.path ? 'text-[#C5A059]' : 'text-white'
                   }`}
                 >
                   {item.name}
@@ -131,7 +131,7 @@ const Header = () => {
               ))}
               <button
                 onClick={() => setLanguage(language === 'marathi' ? 'english' : 'marathi')}
-                className="flex items-center space-x-2 bg-[#002244] px-3 py-2 rounded border border-white/10 hover:bg-[#001a33] transition-colors text-[10px] font-bold uppercase tracking-widest"
+                className="flex items-center space-x-2 bg-[#002244] px-4 py-2 rounded-lg border border-[#C5A059]/30 hover:bg-[#001a33] transition-colors text-[10px] font-bold uppercase tracking-widest text-[#C5A059]"
               >
                 <Globe size={14} className="text-[#C5A059]" />
                 <span>{language === 'marathi' ? 'English' : 'मराठी'}</span>
@@ -230,7 +230,7 @@ const Footer = () => {
                   referrerPolicy="no-referrer"
                 />
               )}
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-normal leading-snug">
                 {t('header.bankName')}
               </h3>
             </div>
