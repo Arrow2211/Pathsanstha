@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import path from "path";
 import fs from "fs/promises";
@@ -236,48 +237,51 @@ const authenticate = (req: any, res: any, next: any) => {
 
 // Helper to read local JSON data
 const readLocalJson = async (filename: string) => {
-  const rootDir = process.cwd();
   const possiblePaths = [
-    path.join(rootDir, "data", filename),
-    path.join(rootDir, "api", "data", filename),
+    path.join(process.cwd(), "data", filename),
+    path.join(process.cwd(), "api", "..", "data", filename),
     path.join(__dirname, "data", filename),
     path.join(__dirname, "..", "data", filename),
-    path.resolve(rootDir, "data", filename),
-    // Vercel specific paths
-    path.join("/var/task", "data", filename),
-    path.join("/var/task", "api", "data", filename)
+    path.resolve(process.cwd(), "data", filename)
   ];
 
   if (process.env.LAMBDA_TASK_ROOT) {
     possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "data", filename));
-    possiblePaths.push(path.join(process.env.LAMBDA_TASK_ROOT, "api", "data", filename));
   }
 
   for (const filePath of possiblePaths) {
     try {
-      await fs.access(filePath);
       const data = await fs.readFile(filePath, "utf-8");
       const json = JSON.parse(data);
       console.log(`Successfully read local JSON ${filename} from: ${filePath}`);
       return json;
     } catch (error: any) {
-      // Only log if it's not a "file not found" error to reduce noise, 
-      // or log everything if we are debugging.
-      if (error.code !== 'ENOENT') {
-        console.log(`Error reading ${filename} from ${filePath}: ${error.message}`);
-      }
+      console.log(`Failed to read ${filename} from ${filePath}: ${error.message}`);
     }
   }
   
   console.error(`Failed to read local JSON ${filename} from all possible paths.`);
-  console.log("Debug Info for Path Resolution:", {
-    cwd: rootDir,
-    dirname: __dirname,
-    lambdaRoot: process.env.LAMBDA_TASK_ROOT,
-    filename
-  });
+  console.log("Current Directory (process.cwd()):", process.cwd());
+  console.log("Directory Name (__dirname):", __dirname);
+  try {
+    const rootFiles = await fs.readdir(process.cwd());
+    console.log("Files in process.cwd():", rootFiles.join(", "));
+  } catch (e) {}
   
   return null;
+};
+
+// Helper to write local JSON data
+const writeLocalJson = async (filename: string, data: any) => {
+  try {
+    const filePath = path.join(process.cwd(), "data", filename);
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+    console.log(`Successfully wrote local JSON ${filename} to: ${filePath}`);
+    return true;
+  } catch (error: any) {
+    console.error(`Failed to write ${filename}: ${error.message}`);
+    return false;
+  }
 };
 
 // Helper to read/write data from Supabase
@@ -299,14 +303,8 @@ const getTableData = async (tableName: string) => {
     const { data, error } = await query;
     
     if (error) {
-      console.error(`Supabase fetch error for ${tableName}:`, error.message, error.details, error.hint);
+      console.error(`Supabase fetch error for ${tableName}:`, error.message);
       return null;
-    }
-    
-    if (!data || data.length === 0) {
-      console.log(`Supabase table ${tableName} is empty.`);
-    } else {
-      console.log(`Successfully fetched ${data.length} rows from Supabase table ${tableName}.`);
     }
     
     return data;
@@ -319,6 +317,8 @@ const getTableData = async (tableName: string) => {
 const getSingleRow = async (tableName: string, key?: string) => {
   try {
     const client = getSupabase();
+    if (!client) return null;
+    
     let query = client.from(tableName).select("*");
     if (key) {
       query = query.eq("section_key", key);
@@ -355,15 +355,20 @@ app.post("/api/enquiries", async (req, res) => {
     }
 
     const client = getSupabase();
-    const { error } = await client.from("enquiries").insert([{
-      name,
-      email,
-      phone,
-      subject: subject || "General Enquiry",
-      message
-    }]);
-
-    if (error) throw error;
+    if (client) {
+      const { error } = await client.from("enquiries").insert([{
+        name,
+        email,
+        phone,
+        subject: subject || "General Enquiry",
+        message
+      }]);
+      if (error) throw error;
+    } else {
+      // Fallback: Log to console or potentially a local file
+      console.log("Supabase not configured. Enquiry received:", { name, phone, message });
+    }
+    
     res.json({ success: true, message: "Enquiry sent successfully" });
   } catch (error: any) {
     console.error("Failed to save enquiry:", error.message);
@@ -374,6 +379,8 @@ app.post("/api/enquiries", async (req, res) => {
 app.get("/api/enquiries", authenticate, async (req, res) => {
   try {
     const client = getSupabase();
+    if (!client) return res.json([]);
+    
     const { data, error } = await client.from("enquiries").select("*").order("created_at", { ascending: false });
     if (error) throw error;
     res.json(data || []);
@@ -387,8 +394,10 @@ app.delete("/api/enquiries/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const client = getSupabase();
-    const { error } = await client.from("enquiries").delete().eq("id", id);
-    if (error) throw error;
+    if (client) {
+      const { error } = await client.from("enquiries").delete().eq("id", id);
+      if (error) throw error;
+    }
     res.json({ success: true });
   } catch (error: any) {
     console.error("Failed to delete enquiry:", error.message);
@@ -529,18 +538,23 @@ app.get("/api/content", async (req, res) => {
 
 app.post("/api/content", authenticate, async (req, res) => {
   try {
-    const client = getSupabase();
     const content = req.body;
-    const sections = Object.keys(content.marathi);
-    for (const section of sections) {
-      const { error } = await client.from("app_content").upsert({
-        section_key: section,
-        marathi: content.marathi[section],
-        english: content.english[section]
-      });
-      if (error) {
-        console.error(`Error saving section ${section}:`, error.message);
-        return res.status(500).json({ error: `Failed to save section ${section}: ${error.message}` });
+    
+    // Always save to local JSON as fallback/primary if Supabase is missing
+    await writeLocalJson("content.json", content);
+
+    const client = getSupabase();
+    if (client) {
+      const sections = Object.keys(content.marathi);
+      for (const section of sections) {
+        const { error } = await client.from("app_content").upsert({
+          section_key: section,
+          marathi: content.marathi[section],
+          english: content.english[section]
+        });
+        if (error) {
+          console.error(`Error saving section ${section} to Supabase:`, error.message);
+        }
       }
     }
     res.json({ success: true });
@@ -575,16 +589,22 @@ app.get("/api/stats", async (req, res) => {
 
 app.post("/api/stats", authenticate, async (req, res) => {
   try {
-    const client = getSupabase();
     const { shareCapital, totalDeposits, totalLoans, totalMembers } = req.body;
-    const { error } = await client.from("stats").upsert({
-      id: 1,
-      share_capital: shareCapital,
-      total_deposits: totalDeposits,
-      total_loans: totalLoans,
-      total_members: totalMembers
-    });
-    if (error) return res.status(500).json({ error: error.message });
+    
+    // Save to local JSON
+    await writeLocalJson("stats.json", { shareCapital, totalDeposits, totalLoans, totalMembers });
+
+    const client = getSupabase();
+    if (client) {
+      const { error } = await client.from("stats").upsert({
+        id: 1,
+        share_capital: shareCapital,
+        total_deposits: totalDeposits,
+        total_loans: totalLoans,
+        total_members: totalMembers
+      });
+      if (error) console.error("Supabase stats save failed:", error.message);
+    }
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -613,38 +633,30 @@ app.get("/api/deposits", async (req, res) => {
 
 app.post("/api/deposits", authenticate, async (req, res) => {
   try {
-    const client = getSupabase();
     const data = req.body;
     
-    // Handle deletions: Remove items not in the current list
-    // Ensure all IDs are strings for consistent comparison with Supabase TEXT column
-    const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
-    
-    console.log(`Saving deposits. Incoming IDs: ${incomingIds.join(', ')}`);
-    
-    if (incomingIds.length > 0) {
-      const { error: deleteError } = await client.from("deposits").delete().not("id", "in", incomingIds);
-      if (deleteError) {
-        console.error("Error deleting removed deposits:", deleteError.message);
-        // We continue anyway to try and upsert the rest
-      }
-    } else {
-      // If no IDs, delete all
-      const { error: deleteError } = await client.from("deposits").delete().neq("id", "_none_");
-      if (deleteError) console.error("Error deleting all deposits:", deleteError.message);
-    }
+    // Save to local JSON
+    await writeLocalJson("deposits.json", data);
 
-    for (const d of data) {
-      const { error } = await client.from("deposits").upsert({
-        id: String(d.id),
-        name_marathi: d.name.marathi,
-        name_english: d.name.english,
-        general: d.general,
-        senior: d.senior
-      });
-      if (error) {
-        console.error(`Error saving deposit ${d.id}:`, error.message);
-        return res.status(500).json({ error: `Failed to save deposit ${d.id}: ${error.message}` });
+    const client = getSupabase();
+    if (client) {
+      // Handle deletions: Remove items not in the current list
+      const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+      
+      if (incomingIds.length > 0) {
+        await client.from("deposits").delete().not("id", "in", incomingIds);
+      } else {
+        await client.from("deposits").delete().neq("id", "_none_");
+      }
+
+      for (const d of data) {
+        await client.from("deposits").upsert({
+          id: String(d.id),
+          name_marathi: d.name.marathi,
+          name_english: d.name.english,
+          general: d.general,
+          senior: d.senior
+        });
       }
     }
     res.json({ success: true });
@@ -673,39 +685,30 @@ app.get("/api/recurring-deposits", async (req, res) => {
   }
 });
 
-// Alias for recurring-deposits if needed by some components
-app.get("/api/rd-maturity", async (req, res) => {
-  res.redirect("/api/recurring-deposits");
-});
-
 app.post("/api/recurring-deposits", authenticate, async (req, res) => {
   try {
-    const client = getSupabase();
     const data = req.body;
-
-    // Handle deletions: Remove items not in the current list
-    const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
     
-    console.log(`Saving recurring deposits. Incoming IDs: ${incomingIds.join(', ')}`);
+    // Save to local JSON
+    await writeLocalJson("recurring_deposits.json", data);
 
-    if (incomingIds.length > 0) {
-      const { error: deleteError } = await client.from("recurring_deposits").delete().not("id", "in", incomingIds);
-      if (deleteError) console.error("Error deleting removed recurring deposits:", deleteError.message);
-    } else {
-      const { error: deleteError } = await client.from("recurring_deposits").delete().neq("id", "_none_");
-      if (deleteError) console.error("Error deleting all recurring deposits:", deleteError.message);
-    }
+    const client = getSupabase();
+    if (client) {
+      const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+      
+      if (incomingIds.length > 0) {
+        await client.from("recurring_deposits").delete().not("id", "in", incomingIds);
+      } else {
+        await client.from("recurring_deposits").delete().neq("id", "_none_");
+      }
 
-    for (const d of data) {
-      const { error } = await client.from("recurring_deposits").upsert({
-        id: String(d.id),
-        period_marathi: d.period.marathi,
-        period_english: d.period.english,
-        rate: d.rate
-      });
-      if (error) {
-        console.error(`Error saving recurring deposit ${d.id}:`, error.message);
-        return res.status(500).json({ error: `Failed to save recurring deposit ${d.id}: ${error.message}` });
+      for (const d of data) {
+        await client.from("recurring_deposits").upsert({
+          id: String(d.id),
+          period_marathi: d.period.marathi,
+          period_english: d.period.english,
+          rate: d.rate
+        });
       }
     }
     res.json({ success: true });
@@ -737,34 +740,30 @@ app.get("/api/loans", async (req, res) => {
 
 app.post("/api/loans", authenticate, async (req, res) => {
   try {
-    const client = getSupabase();
     const data = req.body;
-
-    // Handle deletions: Remove items not in the current list
-    const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
     
-    console.log(`Saving loans. Incoming IDs: ${incomingIds.join(', ')}`);
+    // Save to local JSON
+    await writeLocalJson("loans.json", data);
 
-    if (incomingIds.length > 0) {
-      const { error: deleteError } = await client.from("loans").delete().not("id", "in", incomingIds);
-      if (deleteError) console.error("Error deleting removed loans:", deleteError.message);
-    } else {
-      const { error: deleteError } = await client.from("loans").delete().neq("id", "_none_");
-      if (deleteError) console.error("Error deleting all loans:", deleteError.message);
-    }
+    const client = getSupabase();
+    if (client) {
+      const incomingIds = data.map((d: any) => String(d.id)).filter((id: string) => id !== "undefined" && id !== "");
+      
+      if (incomingIds.length > 0) {
+        await client.from("loans").delete().not("id", "in", incomingIds);
+      } else {
+        await client.from("loans").delete().neq("id", "_none_");
+      }
 
-    for (const d of data) {
-      const { error } = await client.from("loans").upsert({
-        id: String(d.id),
-        name_marathi: d.name.marathi,
-        name_english: d.name.english,
-        rate: d.rate,
-        description_marathi: d.description.marathi,
-        description_english: d.description.english
-      });
-      if (error) {
-        console.error(`Error saving loan ${d.id}:`, error.message);
-        return res.status(500).json({ error: `Failed to save loan ${d.id}: ${error.message}` });
+      for (const d of data) {
+        await client.from("loans").upsert({
+          id: String(d.id),
+          name_marathi: d.name.marathi,
+          name_english: d.name.english,
+          rate: d.rate,
+          description_marathi: d.description.marathi,
+          description_english: d.description.english
+        });
       }
     }
     res.json({ success: true });

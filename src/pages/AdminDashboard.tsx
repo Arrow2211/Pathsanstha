@@ -1098,6 +1098,155 @@ NOTIFY pgrst, 'reload schema';`;
                   </button>
                 </div>
                 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Table Title</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.title || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.title = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Column 1 Header (Amount)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.amount || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.amount = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Column 2 Header (1 Year)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.year1 || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.year1 = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Column 3 Header (2 Years)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.year2 || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.year2 = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Column 4 Header (3 Years)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.year3 || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.year3 = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Effective Date (e.g. Effective from April 2026)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.effectiveDate || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.effectiveDate = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Minimum Deposit (e.g. ₹500 / Month)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.minDeposit || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        newContent[editLang].rdMaturity.minDeposit = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-6 bg-green-50 rounded-2xl border border-green-100">
+                  <div className="md:col-span-3">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">RD Interest Table Title</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.rdInterest?.title || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        if (!newContent[editLang].rdMaturity.rdInterest) newContent[editLang].rdMaturity.rdInterest = {};
+                        newContent[editLang].rdMaturity.rdInterest.title = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">RD Interest Column 1 (Period)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.rdInterest?.period || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        if (!newContent[editLang].rdMaturity.rdInterest) newContent[editLang].rdMaturity.rdInterest = {};
+                        newContent[editLang].rdMaturity.rdInterest.period = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">RD Interest Column 2 (Rate)</label>
+                    <input 
+                      type="text"
+                      value={localContent[editLang].rdMaturity?.rdInterest?.rate || ''}
+                      onChange={(e) => {
+                        const newContent = JSON.parse(JSON.stringify(localContent));
+                        if (!newContent[editLang].rdMaturity) newContent[editLang].rdMaturity = { data: [] };
+                        if (!newContent[editLang].rdMaturity.rdInterest) newContent[editLang].rdMaturity.rdInterest = {};
+                        newContent[editLang].rdMaturity.rdInterest.rate = e.target.value;
+                        setLocalContent(newContent);
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-6">
                   {Array.isArray(localContent[editLang].rdMaturity?.data) && localContent[editLang].rdMaturity.data.map((row: any, idx: number) => (
                     <div key={idx} className="p-6 bg-slate-50 rounded-2xl border border-gray-100 relative group">
@@ -1116,7 +1265,7 @@ NOTIFY pgrst, 'reload schema';`;
                       </button>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <label className="text-xs font-bold text-gray-400">Amount</label>
+                          <label className="text-xs font-bold text-gray-400">{localContent[editLang].rdMaturity?.amount || 'Amount'}</label>
                           <input 
                             value={row.amount}
                             onChange={(e) => {
@@ -1128,7 +1277,7 @@ NOTIFY pgrst, 'reload schema';`;
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-gray-400">1 Year</label>
+                          <label className="text-xs font-bold text-gray-400">{localContent[editLang].rdMaturity?.year1 || '1 Year'}</label>
                           <input 
                             value={row.y1}
                             onChange={(e) => {
@@ -1140,7 +1289,7 @@ NOTIFY pgrst, 'reload schema';`;
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-gray-400">2 Years</label>
+                          <label className="text-xs font-bold text-gray-400">{localContent[editLang].rdMaturity?.year2 || '2 Years'}</label>
                           <input 
                             value={row.y2}
                             onChange={(e) => {
@@ -1152,7 +1301,7 @@ NOTIFY pgrst, 'reload schema';`;
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-gray-400">3 Years</label>
+                          <label className="text-xs font-bold text-gray-400">{localContent[editLang].rdMaturity?.year3 || '3 Years'}</label>
                           <input 
                             value={row.y3}
                             onChange={(e) => {

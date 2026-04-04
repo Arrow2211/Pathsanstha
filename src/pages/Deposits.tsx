@@ -44,7 +44,7 @@ const Deposits = () => {
                 </h2>
               </div>
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
-                Effective from April 2026
+                {t('rdMaturity.effectiveDate') || 'Effective from April 2026'}
               </span>
             </div>
             <div className="hidden md:block overflow-x-auto">
@@ -106,20 +106,20 @@ const Deposits = () => {
               </p>
               <div className="pt-8 border-t border-white/20 relative z-10">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-[#C5A059] mb-2">Minimum Monthly Deposit</p>
-                <p className="text-2xl font-bold">₹500 / Month</p>
+                <p className="text-2xl font-bold">{t('rdMaturity.minDeposit') || '₹500 / Month'}</p>
               </div>
             </div>
             <div className="lg:col-span-2 bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden">
               <div className="bg-slate-50 p-6 md:p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">RD Interest Structure</h3>
+                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">{t('rdMaturity.rdInterest.title') || 'RD Interest Structure'}</h3>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-white px-3 py-1 rounded border border-slate-200">Monthly Compounding</span>
               </div>
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left min-w-[400px]">
                   <thead>
                     <tr className="bg-white border-b border-slate-100">
-                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? 'कालावधी' : 'Period'}</th>
-                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? 'व्याजदर' : 'Interest Rate'}</th>
+                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{t('rdMaturity.rdInterest.period') || (language === 'marathi' ? 'कालावधी' : 'Period')}</th>
+                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{t('rdMaturity.rdInterest.rate') || (language === 'marathi' ? 'व्याजदर' : 'Interest Rate')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -159,7 +159,7 @@ const Deposits = () => {
                   <Clock size={28} />
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest">
-                  {language === 'marathi' ? 'पुनरावृत्ती ठेव (RD) परिपक्वता तक्ता' : 'RD Maturity Table'}
+                  {t('rdMaturity.title')}
                 </h2>
               </div>
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
@@ -171,16 +171,16 @@ const Deposits = () => {
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200">
                     <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {language === 'marathi' ? 'रक्कम' : 'Amount'}
+                      {t('rdMaturity.amount')}
                     </th>
                     <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {language === 'marathi' ? '१ वर्ष' : '1 Year'}
+                      {t('rdMaturity.year1')}
                     </th>
                     <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {language === 'marathi' ? '२ वर्ष' : '2 Years'}
+                      {t('rdMaturity.year2')}
                     </th>
                     <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {language === 'marathi' ? '३ वर्ष' : '3 Years'}
+                      {t('rdMaturity.year3')}
                     </th>
                   </tr>
                 </thead>
