@@ -18,7 +18,13 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold tracking-tight text-slate-900;
+    @apply font-sans font-bold tracking-normal text-slate-900;
+  }
+
+  /* Marathi specific improvements */
+  .font-marathi {
+    @apply leading-relaxed tracking-normal;
+    line-height: 1.6 !important;
   }
 }
 

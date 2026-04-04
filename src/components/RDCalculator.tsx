@@ -51,9 +51,17 @@ const RDCalculator: React.FC = () => {
       <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="space-y-8">
           <div>
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-between mb-4 items-center">
               <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.monthlyDeposit}</label>
-              <span className="text-blue-900 font-bold">{labels.currency} {monthlyDeposit.toLocaleString()}</span>
+              <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                <span className="text-blue-900 font-bold mr-1">{labels.currency}</span>
+                <input 
+                  type="number" 
+                  value={monthlyDeposit}
+                  onChange={(e) => setMonthlyDeposit(Number(e.target.value))}
+                  className="bg-transparent text-blue-900 font-bold w-20 text-right focus:outline-none"
+                />
+              </div>
             </div>
             <input 
               type="range" 
@@ -72,9 +80,18 @@ const RDCalculator: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <div className="flex justify-between mb-4">
+              <div className="flex justify-between mb-4 items-center">
                 <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.interestRate}</label>
-                <span className="text-blue-900 font-bold">{interestRate}%</span>
+                <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                  <input 
+                    type="number" 
+                    step="0.1"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(Number(e.target.value))}
+                    className="bg-transparent text-blue-900 font-bold w-12 text-right focus:outline-none"
+                  />
+                  <span className="text-blue-900 font-bold ml-1">%</span>
+                </div>
               </div>
               <input 
                 type="range" 
@@ -88,9 +105,17 @@ const RDCalculator: React.FC = () => {
             </div>
 
             <div>
-              <div className="flex justify-between mb-4">
+              <div className="flex justify-between mb-4 items-center">
                 <label className="text-sm font-bold text-gray-600 uppercase tracking-wider">{labels.tenure}</label>
-                <span className="text-blue-900 font-bold">{tenureMonths} Mo</span>
+                <div className="flex items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                  <input 
+                    type="number" 
+                    value={tenureMonths}
+                    onChange={(e) => setTenureMonths(Number(e.target.value))}
+                    className="bg-transparent text-blue-900 font-bold w-12 text-right focus:outline-none"
+                  />
+                  <span className="text-blue-900 font-bold ml-1 text-[10px] uppercase">Mo</span>
+                </div>
               </div>
               <input 
                 type="range" 

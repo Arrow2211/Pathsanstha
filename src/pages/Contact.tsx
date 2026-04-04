@@ -46,7 +46,7 @@ const Contact = () => {
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="section-title text-white mb-4"
+            className={`section-title text-white mb-4 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}
           >
             {t('contact.title')}
           </motion.h1>
@@ -74,14 +74,14 @@ const Contact = () => {
                   <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
                     <MapPin size={24} />
                   </div>
-                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'मुख्य कार्यालय' : 'Main Office'}</h3>
+                  <h3 className={`font-bold text-[#003366] uppercase tracking-wide text-xs mb-4 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>{language === 'marathi' ? 'मुख्य कार्यालय' : 'Main Office'}</h3>
                   <p className="text-slate-600 text-sm leading-relaxed">{t('contact.address')}</p>
                 </div>
                 <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 hover:shadow-lg transition-all group">
                   <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
                     <Phone size={24} />
                   </div>
-                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'संपर्क' : 'Contact'}</h3>
+                  <h3 className={`font-bold text-[#003366] uppercase tracking-wide text-xs mb-4 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>{language === 'marathi' ? 'संपर्क' : 'Contact'}</h3>
                   <p className="text-slate-600 text-sm leading-relaxed font-bold mb-1">{t('contact.phone')}</p>
                   <p className="text-slate-600 text-sm leading-relaxed">{t('contact.email')}</p>
                 </div>
@@ -89,7 +89,7 @@ const Contact = () => {
                   <div className="w-12 h-12 bg-[#003366] text-white rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#C5A059] transition-colors">
                     <Clock size={24} />
                   </div>
-                  <h3 className="font-bold text-[#003366] uppercase tracking-widest text-xs mb-4">{language === 'marathi' ? 'कामाची वेळ' : 'Working Hours'}</h3>
+                  <h3 className={`font-bold text-[#003366] uppercase tracking-wide text-xs mb-4 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>{language === 'marathi' ? 'कामाची वेळ' : 'Working Hours'}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="bg-white p-4 rounded-lg border border-slate-100">
                       <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Mon - Sat</p>
@@ -134,7 +134,7 @@ const Contact = () => {
                 <div className="absolute top-0 left-0 w-full h-2 bg-[#C5A059]"></div>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -translate-y-1/2 translate-x-1/2 -z-10"></div>
                 
-                <h2 className="text-2xl font-bold text-[#003366] mb-10 uppercase tracking-widest flex items-center gap-3">
+                <h2 className={`text-2xl font-bold text-[#003366] mb-10 uppercase tracking-wide flex items-center gap-3 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
                   <span className="w-8 h-1 bg-[#C5A059]"></span>
                   {language === 'marathi' ? 'आम्हाला संदेश पाठवा' : 'Send us a Message'}
                 </h2>
@@ -144,7 +144,7 @@ const Contact = () => {
                     <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-green-200">
                       <CheckCircle size={40} />
                     </div>
-                    <h3 className="text-xl font-bold text-[#003366] mb-4 uppercase tracking-widest">
+                    <h3 className="text-xl font-bold text-[#003366] mb-4 uppercase tracking-wide leading-snug">
                       {language === 'marathi' ? 'धन्यवाद!' : 'Thank You!'}
                     </h3>
                     <p className="text-slate-500 leading-relaxed text-lg">

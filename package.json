@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "npx tsx server.ts",
-    "build": "vite build",
+    "start": "npx tsx server.ts",
+    "build": "vite build && mkdir -p api/data && cp -r data/* api/data/",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
