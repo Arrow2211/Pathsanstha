@@ -115,6 +115,13 @@
       "year1": "१ वर्ष",
       "year2": "२ वर्ष",
       "year3": "३ वर्ष",
+      "effectiveDate": "एप्रिल २०२६ पासून लागू",
+      "minDeposit": "₹५०० / महिना",
+      "rdInterest": {
+        "title": "आरडी व्याज दर रचना",
+        "period": "कालावधी",
+        "rate": "व्याज दर"
+      },
       "data": [
         { "amount": "१००", "y1": "१२५६", "y2": "२६२३", "y3": "४१०९" },
         { "amount": "२००", "y1": "२५१३", "y2": "५२४६", "y3": "८२१९" },
@@ -242,6 +249,13 @@
       "year1": "1 Year",
       "year2": "2 Years",
       "year3": "3 Years",
+      "effectiveDate": "Effective from April 2026",
+      "minDeposit": "₹500 / Month",
+      "rdInterest": {
+        "title": "RD Interest Structure",
+        "period": "Period",
+        "rate": "Interest Rate"
+      },
       "data": [
         { "amount": "100", "y1": "1,256", "y2": "2,623", "y3": "4,109" },
         { "amount": "200", "y1": "2,513", "y2": "5,246", "y3": "8,219" },
