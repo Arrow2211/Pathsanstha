@@ -44,7 +44,7 @@ const Deposits = () => {
                 </h2>
               </div>
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
-                {t('rdMaturity.effectiveDate') || 'Effective from April 2026'}
+                Effective from April 2026
               </span>
             </div>
             <div className="hidden md:block overflow-x-auto">
@@ -106,20 +106,20 @@ const Deposits = () => {
               </p>
               <div className="pt-8 border-t border-white/20 relative z-10">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-[#C5A059] mb-2">Minimum Monthly Deposit</p>
-                <p className="text-2xl font-bold">{t('rdMaturity.minDeposit') || '₹500 / Month'}</p>
+                <p className="text-2xl font-bold">₹500 / Month</p>
               </div>
             </div>
             <div className="lg:col-span-2 bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden">
               <div className="bg-slate-50 p-6 md:p-8 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">{t('rdMaturity.rdInterest.title') || 'RD Interest Structure'}</h3>
+                <h3 className="font-bold text-[#003366] uppercase tracking-widest text-sm">RD Interest Structure</h3>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 bg-white px-3 py-1 rounded border border-slate-200">Monthly Compounding</span>
               </div>
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-left min-w-[400px]">
                   <thead>
                     <tr className="bg-white border-b border-slate-100">
-                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{t('rdMaturity.rdInterest.period') || (language === 'marathi' ? 'कालावधी' : 'Period')}</th>
-                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{t('rdMaturity.rdInterest.rate') || (language === 'marathi' ? 'व्याजदर' : 'Interest Rate')}</th>
+                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? 'कालावधी' : 'Period'}</th>
+                      <th className="px-8 py-6 font-bold text-slate-400 uppercase tracking-widest text-[10px]">{language === 'marathi' ? 'व्याजदर' : 'Interest Rate'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -148,61 +148,6 @@ const Deposits = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Separate RD Maturity Table Section - High Visibility */}
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden mb-20">
-            <div className="bg-[#003366] p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between border-b-4 border-[#C5A059] gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-[#C5A059]">
-                  <Clock size={28} />
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold uppercase tracking-widest">
-                  {t('rdMaturity.title')}
-                </h2>
-              </div>
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-70 bg-white/10 px-4 py-2 rounded-full self-start md:self-auto">
-                {language === 'marathi' ? 'परिपक्वता रक्कम' : 'Maturity Amounts'}
-              </span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-100 border-b border-slate-200">
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {t('rdMaturity.amount')}
-                    </th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {t('rdMaturity.year1')}
-                    </th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {t('rdMaturity.year2')}
-                    </th>
-                    <th className="px-8 py-6 font-bold text-[#003366] uppercase tracking-widest text-xs">
-                      {t('rdMaturity.year3')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {(Array.isArray(t('rdMaturity.data')) ? t('rdMaturity.data') : [
-                    { amount: "100", y1: "1256", y2: "2623", y3: "4109" },
-                    { amount: "200", y1: "2513", y2: "5246", y3: "8219" },
-                    { amount: "300", y1: "3769", y2: "7869", y3: "12328" },
-                    { amount: "500", y1: "6282", y2: "13115", y3: "20547" },
-                    { amount: "1000", y1: "12563", y2: "26229", y3: "41094" },
-                    { amount: "1500", y1: "18845", y2: "39344", y3: "61641" },
-                    { amount: "2000", y1: "25127", y2: "52459", y3: "82189" }
-                  ]).map((row: any, i: number) => (
-                    <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                      <td className="px-8 py-6 text-slate-700 font-bold">₹{row.amount}</td>
-                      <td className="px-8 py-6 text-[#003366] font-black text-xl">₹{row.y1}</td>
-                      <td className="px-8 py-6 text-[#003366] font-black text-xl">₹{row.y2}</td>
-                      <td className="px-8 py-6 text-[#C5A059] font-black text-xl">₹{row.y3}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
 

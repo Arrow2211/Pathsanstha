@@ -41,11 +41,12 @@ const Home = () => {
                   </span>
                 </div>
                 
-                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-relaxed tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
-                  {t('hero.title')}
+                <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-primary mb-8 md:mb-10 leading-[0.95] tracking-tight ${language === 'marathi' ? 'font-marathi' : ''}`}>
+                  <span className="block">{t('hero.title').split(' ').slice(0, -1).join(' ')}</span>
+                  <span className="text-gradient">{t('hero.title').split(' ').slice(-1)}</span>
                 </h1>
                 
-                <p className={`text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium ${language === 'marathi' ? 'font-marathi' : ''}`}>
+                <p className="text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
                   {t('hero.tagline')}
                 </p>
                 
@@ -159,7 +160,7 @@ const Home = () => {
                   </div>
                 </div>
                 <p className="text-[10px] md:text-[11px] uppercase font-black text-blue-200 tracking-[0.2em] md:tracking-[0.3em] mb-2 md:mb-4">{stat.label}</p>
-                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-normal text-white break-words">
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tighter text-white break-words">
                   {stat.label.toLowerCase().includes('member') || stat.label.toLowerCase().includes('सभासद') 
                     ? stat.value 
                     : `₹${(stat.value || '').toString().replace('₹', '')}`
@@ -176,7 +177,7 @@ const Home = () => {
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-surface to-transparent"></div>
         <div className="section-container relative z-10">
           <div className="text-center mb-16 md:mb-24">
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-4 md:mb-6 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-4 md:mb-6">
               {t('services.title')}
             </h2>
             <div className="w-16 md:w-24 h-1.5 md:h-2 bg-accent mx-auto rounded-full"></div>
@@ -195,7 +196,7 @@ const Home = () => {
                   <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-surface flex items-center justify-center text-accent mb-6 md:mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-500">
                     <Icon size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-black mb-3 md:mb-5 text-primary uppercase tracking-normal">{service.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-black mb-3 md:mb-5 text-primary uppercase tracking-tight">{service.title}</h3>
                   <p className="text-slate-500 text-sm md:text-base leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">{service.desc}</p>
                 </motion.div>
               );
@@ -210,7 +211,7 @@ const Home = () => {
         <div className="section-container relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-16 md:gap-24">
             <div className="flex-1 w-full order-2 lg:order-1">
-              <h2 className={`text-3xl sm:text-4xl md:text-5xl font-black text-primary mb-10 md:mb-16 text-center lg:text-left leading-relaxed tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary mb-10 md:mb-16 text-center lg:text-left leading-tight tracking-tighter">
                 {t('trust.title')}
               </h2>
               <div className="space-y-8 md:space-y-12">
@@ -227,7 +228,7 @@ const Home = () => {
                       <ShieldCheck size={24} className="md:w-7 md:h-7" />
                     </div>
                     <div>
-                      <h4 className="font-black text-lg md:text-xl text-primary mb-2 md:mb-3 uppercase tracking-normal">{item.title}</h4>
+                      <h4 className="font-black text-lg md:text-xl text-primary mb-2 md:mb-3 uppercase tracking-tight">{item.title}</h4>
                       <p className="text-slate-500 text-sm md:text-base leading-relaxed opacity-80">{item.desc}</p>
                     </div>
                   </motion.div>
@@ -259,7 +260,7 @@ const Home = () => {
       <section className="section-padding bg-white">
         <div className="section-container">
           <div className="text-center mb-24">
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-6 leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-primary mb-6">
               {language === 'marathi' ? 'आमच्या सभासदांचे मनोगत' : 'Member Testimonials'}
             </h2>
             <div className="w-24 h-2 bg-accent mx-auto rounded-full"></div>

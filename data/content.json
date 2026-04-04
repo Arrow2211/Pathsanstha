@@ -108,29 +108,6 @@
           "desc": "कमी कागदपत्रे आणि जलद प्रक्रिया"
         }
       ]
-    },
-    "rdMaturity": {
-      "title": "पुनरावृत्ती ठेव (RD) परिपक्वता तक्ता",
-      "amount": "रक्कम",
-      "year1": "१ वर्ष",
-      "year2": "२ वर्ष",
-      "year3": "३ वर्ष",
-      "effectiveDate": "एप्रिल २०२६ पासून लागू",
-      "minDeposit": "₹५०० / महिना",
-      "rdInterest": {
-        "title": "आरडी व्याज दर रचना",
-        "period": "कालावधी",
-        "rate": "व्याज दर"
-      },
-      "data": [
-        { "amount": "१००", "y1": "१२५६", "y2": "२६२३", "y3": "४१०९" },
-        { "amount": "२००", "y1": "२५१३", "y2": "५२४६", "y3": "८२१९" },
-        { "amount": "३००", "y1": "३७६९", "y2": "७८६९", "y3": "१२३२८" },
-        { "amount": "५००", "y1": "६२८२", "y2": "१३११५", "y3": "२०५४७" },
-        { "amount": "१०००", "y1": "१२५६३", "y2": "२६२२९", "y3": "४१०९४" },
-        { "amount": "१५००", "y1": "१८८४५", "y2": "३९३४४", "y3": "६१६४१" },
-        { "amount": "२०००", "y1": "२५१२७", "y2": "५२४५९", "y3": "८२१८९" }
-      ]
     }
   },
   "english": {
@@ -241,29 +218,6 @@
           "title": "Fast Loan Approvals",
           "desc": "Minimal documentation and quick processing"
         }
-      ]
-    },
-    "rdMaturity": {
-      "title": "Recurring Deposit (RD) Maturity Table",
-      "amount": "Amount",
-      "year1": "1 Year",
-      "year2": "2 Years",
-      "year3": "3 Years",
-      "effectiveDate": "Effective from April 2026",
-      "minDeposit": "₹500 / Month",
-      "rdInterest": {
-        "title": "RD Interest Structure",
-        "period": "Period",
-        "rate": "Interest Rate"
-      },
-      "data": [
-        { "amount": "100", "y1": "1,256", "y2": "2,623", "y3": "4,109" },
-        { "amount": "200", "y1": "2,513", "y2": "5,246", "y3": "8,219" },
-        { "amount": "300", "y1": "3,769", "y2": "7,869", "y3": "12,328" },
-        { "amount": "500", "y1": "6,282", "y2": "13,115", "y3": "20,547" },
-        { "amount": "1000", "y1": "12,563", "y2": "26,229", "y3": "41,094" },
-        { "amount": "1500", "y1": "18,845", "y2": "39,344", "y3": "61,641" },
-        { "amount": "2000", "y1": "25,127", "y2": "52,459", "y3": "82,189" }
       ]
     }
   }

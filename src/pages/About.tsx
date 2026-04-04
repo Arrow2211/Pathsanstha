@@ -15,7 +15,7 @@ const About = () => {
           <motion.h1 
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`text-4xl sm:text-5xl md:text-7xl font-black text-white mb-6 tracking-normal leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}
+            className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter"
           >
             <span className="text-gradient brightness-150">{t('about.title')}</span>
           </motion.h1>
@@ -41,7 +41,7 @@ const About = () => {
               <div className="w-8 h-[2px] bg-accent"></div>
               <span>{language === 'marathi' ? 'आमचा वारसा' : 'Our Legacy'}</span>
             </div>
-            <h2 className={`text-4xl md:text-5xl font-black text-primary mb-10 leading-relaxed tracking-normal ${language === 'marathi' ? 'font-marathi' : ''}`}>
+            <h2 className="text-4xl md:text-5xl font-black text-primary mb-10 leading-tight tracking-tight">
               {language === 'marathi' ? 'आमचा इतिहास आणि परंपरा' : 'Our History & Tradition'}
             </h2>
             <p className="text-slate-600 text-lg md:text-xl leading-relaxed mb-12 font-medium">
@@ -73,7 +73,7 @@ const About = () => {
               />
             </div>
             <div className="absolute -bottom-10 -left-10 bg-primary text-white p-10 rounded-[2.5rem] shadow-2xl border-b-[12px] border-accent hidden md:block z-20 backdrop-blur-xl">
-              <p className="text-6xl font-black mb-2 tracking-normal">25+</p>
+              <p className="text-6xl font-black mb-2 tracking-tighter">25+</p>
               <p className="text-xs uppercase font-black tracking-[0.3em] text-accent">{language === 'marathi' ? 'वर्षांचा विश्वास' : 'Years of Trust'}</p>
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-accent/5 rounded-full blur-3xl -z-10"></div>
@@ -89,7 +89,7 @@ const About = () => {
             <div className="w-20 h-20 bg-surface rounded-2xl flex items-center justify-center text-accent mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-xl shadow-slate-100">
               <Target size={44} strokeWidth={1.5} />
             </div>
-            <h3 className={`text-3xl font-black text-primary mb-8 uppercase tracking-normal leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
+            <h3 className="text-3xl font-black text-primary mb-8 uppercase tracking-tight leading-tight">
               {language === 'marathi' ? 'ध्येय (Mission)' : 'Mission'}
             </h3>
             <p className="text-slate-600 text-lg md:text-xl leading-relaxed font-medium">
@@ -104,7 +104,7 @@ const About = () => {
             <div className="w-20 h-20 bg-surface rounded-2xl flex items-center justify-center text-accent mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-xl shadow-slate-100">
               <Eye size={44} strokeWidth={1.5} />
             </div>
-            <h3 className={`text-3xl font-black text-primary mb-8 uppercase tracking-normal leading-relaxed ${language === 'marathi' ? 'font-marathi' : ''}`}>
+            <h3 className="text-3xl font-black text-primary mb-8 uppercase tracking-tight leading-tight">
               {language === 'marathi' ? 'दृष्टी (Vision)' : 'Vision'}
             </h3>
             <p className="text-slate-600 text-lg md:text-xl leading-relaxed font-medium">
@@ -116,7 +116,7 @@ const About = () => {
         {/* Values - Modern Grid */}
         <div className="bg-primary-dark rounded-[4rem] p-16 md:p-24 text-white text-center border-b-[16px] border-accent relative overflow-hidden shadow-2xl">
           <div className="absolute inset-0 bg-pattern opacity-5 pointer-events-none"></div>
-          <h2 className={`text-3xl md:text-5xl font-black mb-24 uppercase tracking-widest leading-relaxed relative z-10 ${language === 'marathi' ? 'font-marathi' : ''}`}>
+          <h2 className="text-3xl md:text-5xl font-black mb-24 uppercase tracking-widest leading-tight relative z-10">
             {language === 'marathi' ? 'आमची मूल्ये' : 'Our Core Values'}
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-16 relative z-10">
